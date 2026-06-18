@@ -180,8 +180,8 @@ export function AdminDashboardClient({ analytics, recentOrders }: Props) {
                     cx="50%"
                     cy="50%"
                     outerRadius={80}
-                    label={({ status, percent }) =>
-                      `${statusLabel(status)} ${(percent * 100).toFixed(0)}%`
+                    label={({ name, percent }) =>
+                      `${statusLabel(name as string)} ${((percent ?? 0) * 100).toFixed(0)}%`
                     }
                     labelLine={false}
                   >

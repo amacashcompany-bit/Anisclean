@@ -11,7 +11,8 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     redirect("/admin/login")
   }
 
-  if (session.user.role !== "admin") {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  if ((session.user as any).role !== "admin") {
     redirect("/")
   }
 

@@ -143,7 +143,7 @@ export function AdminOrdersClient({ orders }: Props) {
             className="pl-9"
           />
         </div>
-        <Select value={filterStatus} onValueChange={setFilterStatus}>
+        <Select value={filterStatus} onValueChange={(v) => v && setFilterStatus(v)}>
           <SelectTrigger className="w-40">
             <SelectValue />
           </SelectTrigger>
@@ -192,7 +192,7 @@ export function AdminOrdersClient({ orders }: Props) {
                       <td className="px-4 py-3">
                         <Select
                           value={order.status}
-                          onValueChange={(v) => handleStatusChange(order.id, v as Status)}
+                          onValueChange={(v) => v && handleStatusChange(order.id, v as Status)}
                           disabled={pending}
                         >
                           <SelectTrigger className="h-7 text-xs w-36">
@@ -230,10 +230,8 @@ export function AdminOrdersClient({ orders }: Props) {
                             <FileText className="size-3.5" />
                           </Button>
                           <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                              <Button variant="ghost" size="icon" className="size-7 text-destructive hover:text-destructive">
-                                <Trash2 className="size-3.5" />
-                              </Button>
+                            <AlertDialogTrigger className="inline-flex items-center justify-center size-7 rounded-lg text-destructive hover:bg-accent transition-colors">
+                              <Trash2 className="size-3.5" />
                             </AlertDialogTrigger>
                             <AlertDialogContent>
                               <AlertDialogHeader>
@@ -325,6 +323,7 @@ export function AdminOrdersClient({ orders }: Props) {
                   <Select
                     value={selectedOrder.status}
                     onValueChange={(v) => {
+                      if (!v) return
                       handleStatusChange(selectedOrder.id, v as Status)
                       setSelectedOrder({ ...selectedOrder, status: v })
                     }}

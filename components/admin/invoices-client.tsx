@@ -367,10 +367,8 @@ export function AdminInvoicesClient({ invoices }: Props) {
                             </Button>
                           )}
                           <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                              <Button variant="ghost" size="icon" className="size-7 text-destructive hover:text-destructive">
-                                <Trash2 className="size-3.5" />
-                              </Button>
+                            <AlertDialogTrigger className="inline-flex items-center justify-center size-7 rounded-lg text-destructive hover:bg-accent transition-colors">
+                              <Trash2 className="size-3.5" />
                             </AlertDialogTrigger>
                             <AlertDialogContent>
                               <AlertDialogHeader>

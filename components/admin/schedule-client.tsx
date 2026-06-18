@@ -330,7 +330,7 @@ export function AdminScheduleClient({ appointments }: Props) {
                       <td className="px-4 py-2.5">
                         <Select
                           value={a.status}
-                          onValueChange={(v) => handleStatusChange(a, v as ApptStatus)}
+                          onValueChange={(v) => v && handleStatusChange(a, v as ApptStatus)}
                           disabled={pending}
                         >
                           <SelectTrigger className="h-7 text-xs w-32">
@@ -349,10 +349,8 @@ export function AdminScheduleClient({ appointments }: Props) {
                             <Pencil className="size-3.5" />
                           </Button>
                           <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                              <Button variant="ghost" size="icon" className="size-7 text-destructive hover:text-destructive">
-                                <Trash2 className="size-3.5" />
-                              </Button>
+                            <AlertDialogTrigger className="inline-flex items-center justify-center size-7 rounded-lg text-destructive hover:bg-accent transition-colors">
+                              <Trash2 className="size-3.5" />
                             </AlertDialogTrigger>
                             <AlertDialogContent>
                               <AlertDialogHeader>
@@ -443,7 +441,7 @@ export function AdminScheduleClient({ appointments }: Props) {
               </div>
               <div className="col-span-2 flex flex-col gap-1.5">
                 <Label>{t("admin.schedule.type")}</Label>
-                <Select value={form.type} onValueChange={(v) => setForm(f => ({ ...f, type: v as ApptType }))}>
+                <Select value={form.type} onValueChange={(v) => v && setForm(f => ({ ...f, type: v as ApptType }))}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
@@ -456,7 +454,7 @@ export function AdminScheduleClient({ appointments }: Props) {
               {form.type === "recurring" && (
                 <div className="col-span-2 flex flex-col gap-1.5">
                   <Label>Fréquence</Label>
-                  <Select value={form.freq} onValueChange={(v) => setForm(f => ({ ...f, freq: v as typeof form.freq }))}>
+                  <Select value={form.freq} onValueChange={(v) => v && setForm(f => ({ ...f, freq: v as typeof form.freq }))}>
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
