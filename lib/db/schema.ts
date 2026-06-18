@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, boolean, serial, real, jsonb } from "drizzle-orm/pg-core"
+import { pgTable, text, timestamp, boolean, serial, real, jsonb, integer } from "drizzle-orm/pg-core"
 
 // --- Better Auth required tables -------------------------------------------
 // Column names are camelCase to match Better Auth's defaults. Do not rename.
@@ -81,6 +81,79 @@ export const orders = pgTable("orders", {
   taxCredit: real("taxCredit").notNull(),
   total: real("total").notNull(),
   lang: text("lang").notNull().default("fr"),
+  // status: new | confirmed | in_progress | completed | canceled
   status: text("status").notNull().default("new"),
+  blockedUserId: text("blockedUserId"),
   createdAt: timestamp("createdAt").notNull().defaultNow(),
+})
+
+export type InvoiceItem = {
+  description: string
+  qty: number
+  unitPrice: number
+  amount: number
+}
+
+export const invoices = pgTable("invoices", {
+  id: serial("id").primaryKey(),
+  number: text("number").notNull().unique(),
+  orderId: integer("orderId").references(() => orders.id, { onDelete: "set null" }),
+  clientName: text("clientName").notNull(),
+  clientEmail: text("clientEmail"),
+  clientPhone: text("clientPhone"),
+  clientAddress: text("clientAddress"),
+  items: jsonb("items").$type<InvoiceItem[]>().notNull(),
+  subtotal: real("subtotal").notNull(),
+  taxCredit: real("taxCredit").notNull().default(0),
+  total: real("total").notNull(),
+  // status: draft | sent | paid
+  status: text("status").notNull().default("draft"),
+  notes: text("notes"),
+  sentAt: timestamp("sentAt"),
+  createdAt: timestamp("createdAt").notNull().defaultNow(),
+})
+
+export type ServiceOverride = {
+  hourlyRate?: number
+  fromLabel?: string
+  packages?: { id: string; label: string; price: number }[]
+  active?: boolean
+}
+
+export const serviceOverrides = pgTable("service_overrides", {
+  id: text("id").primaryKey(), // matches services.ts id
+  nameOverride: text("nameOverride"),
+  descOverride: text("descOverride"),
+  data: jsonb("data").$type<ServiceOverride>(),
+  updatedAt: timestamp("updatedAt").notNull().defaultNow(),
+})
+
+export type RecurringRule = {
+  freq: "weekly" | "biweekly" | "monthly"
+  dayOfWeek?: number // 0=Sun … 6=Sat
+  notes?: string
+}
+
+export const appointments = pgTable("appointments", {
+  id: serial("id").primaryKey(),
+  orderId: integer("orderId").references(() => orders.id, { onDelete: "set null" }),
+  clientName: text("clientName").notNull(),
+  clientPhone: text("clientPhone"),
+  serviceLabel: text("serviceLabel").notNull(),
+  date: text("date").notNull(), // ISO date string YYYY-MM-DD
+  startTime: text("startTime"), // HH:MM
+  endTime: text("endTime"),
+  notes: text("notes"),
+  // type: one_time | recurring
+  type: text("type").notNull().default("one_time"),
+  recurringRule: jsonb("recurringRule").$type<RecurringRule>(),
+  // appt status: scheduled | completed | canceled
+  status: text("status").notNull().default("scheduled"),
+  createdAt: timestamp("createdAt").notNull().defaultNow(),
+})
+
+export const siteSettings = pgTable("site_settings", {
+  key: text("key").primaryKey(),
+  value: text("value").notNull(),
+  updatedAt: timestamp("updatedAt").notNull().defaultNow(),
 })
