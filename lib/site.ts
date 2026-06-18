@@ -8,10 +8,10 @@ export const site = {
 }
 
 export const navLinks = [
-  { label: "Prestations", href: "#services" },
-  { label: "Crédit d'impôt", href: "#credit-impot" },
-  { label: "Déroulement", href: "#process" },
-  { label: "Zone", href: "#zone" },
-  { label: "Avis", href: "#avis" },
-  { label: "FAQ", href: "#faq" },
+  { key: "nav.services", href: "/#services" },
+  { key: "nav.simulator", href: "/#credit-impot" },
+  { key: "nav.process", href: "/#process" },
+  { key: "nav.area", href: "/#zone" },
+  { key: "nav.reviews", href: "/#avis" },
+  { key: "nav.faq", href: "/#faq" },
 ]
