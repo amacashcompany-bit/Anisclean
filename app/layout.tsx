@@ -10,9 +10,9 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: 'Sanadclean — Nettoyage professionnel résidentiel & commercial',
+  title: 'Roudjine Clean — Ménage à domicile & nettoyage professionnel à Nîmes',
   description:
-    'Sanadclean offre un service de nettoyage haut de gamme pour les espaces résidentiels et commerciaux. Des espaces impeccables, un service de confiance.',
+    'Ménage à domicile avec crédit d’impôt de 50 %, remise en état, nettoyage de vitres, canapés, terrasses et bureaux à Nîmes. Un seul prestataire pour tout nettoyer. Devis gratuit.',
   generator: 'v0.app',
 }
 
