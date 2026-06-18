@@ -3,7 +3,7 @@ import { site } from "@/lib/site"
 
 export function FloatingContact() {
   return (
-    <div className="fixed bottom-20 end-4 z-50 flex flex-col gap-3 lg:bottom-5 lg:end-5">
+    <div className="fixed bottom-1/2 end-4 z-50 flex flex-col gap-3 lg:bottom-5 lg:end-5">
       <a
         href={site.whatsappHref}
         target="_blank"
