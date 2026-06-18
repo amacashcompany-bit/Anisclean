@@ -1,5 +1,9 @@
+"use client"
+
+import Link from "next/link"
 import { MapPin } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { useI18n } from "@/components/providers/i18n-provider"
 
 const communes = [
   "Nîmes", "Caissargues", "Bouillargues", "Rodilhan", "Marguerittes", "Garons",
@@ -8,22 +12,21 @@ const communes = [
 ]
 
 export function AreaSection() {
+  const { t } = useI18n()
+
   return (
     <section id="zone" className="bg-secondary/40 py-16 md:py-24">
       <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 md:px-6 lg:grid-cols-2 lg:gap-16">
         <div className="flex flex-col items-start gap-6">
           <span className="inline-flex items-center gap-2 rounded-full border border-accent/30 bg-accent/5 px-3 py-1 text-sm font-medium text-accent">
-            Zone d&apos;intervention
+            {t("area.badge")}
           </span>
           <h2 className="text-balance text-3xl font-extrabold tracking-tight text-foreground md:text-4xl">
-            À Nîmes et dans tout le Gard rhodanien
+            {t("area.title")}
           </h2>
-          <p className="text-pretty text-lg leading-relaxed text-muted-foreground">
-            Nous intervenons à Nîmes et dans les communes voisines. Vérifiez votre secteur ou contactez-nous
-            directement.
-          </p>
+          <p className="text-pretty text-lg leading-relaxed text-muted-foreground">{t("area.desc")}</p>
           <Button asChild size="lg">
-            <a href="#contact">Vérifier mon secteur</a>
+            <Link href="/commande">{t("nav.order")}</Link>
           </Button>
         </div>
 

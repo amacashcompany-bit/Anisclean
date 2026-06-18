@@ -22,6 +22,8 @@ export interface ServiceDef {
   packagesTitleKey?: string
   /** lowest displayed "from" price for the landing card */
   fromLabel: string
+  /** whether the service is eligible for the 50% home-service tax credit */
+  taxEligible: boolean
 }
 
 export const MATERIAL_SURCHARGE = 5
@@ -41,6 +43,7 @@ export const services: ServiceDef[] = [
       { id: "menage-t4", label: "T4", price: 360 },
     ],
     fromLabel: "30 €/h",
+    taxEligible: true,
   },
   {
     id: "remise",
@@ -55,6 +58,7 @@ export const services: ServiceDef[] = [
       { id: "remise-t4", label: "T4", price: 540 },
     ],
     fromLabel: "250 €",
+    taxEligible: true,
   },
   {
     id: "vitres",
@@ -63,6 +67,7 @@ export const services: ServiceDef[] = [
     descKey: "svc.vitres.desc",
     hourly: { rate: 30, labelKey: "lbl.hourly" },
     fromLabel: "30 €/h",
+    taxEligible: true,
   },
   {
     id: "canape",
@@ -71,6 +76,7 @@ export const services: ServiceDef[] = [
     descKey: "svc.canape.desc",
     hourly: { rate: 30, labelKey: "lbl.hourly" },
     fromLabel: "60 €",
+    taxEligible: true,
   },
   {
     id: "bureaux",
@@ -79,6 +85,7 @@ export const services: ServiceDef[] = [
     descKey: "svc.bureaux.desc",
     hourly: { rate: 35, allowMaterial: true, labelKey: "lbl.hourly" },
     fromLabel: "35 €/h",
+    taxEligible: false,
   },
   {
     id: "nuisibles",
@@ -87,6 +94,7 @@ export const services: ServiceDef[] = [
     descKey: "svc.nuisibles.desc",
     hourly: { rate: 40, labelKey: "lbl.hourly" },
     fromLabel: "40 €/h",
+    taxEligible: false,
   },
 ]
 
