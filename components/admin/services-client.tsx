@@ -137,8 +137,8 @@ export function AdminServicesClient({ overrides }: Props) {
                 </div>
                 <div className="flex items-center gap-1">
                   {ovr && (
-                    <AlertDialog>
-                      <AlertDialogTrigger className="inline-flex items-center justify-center size-8 rounded-lg text-muted-foreground hover:bg-accent transition-colors">
+                  <AlertDialog>
+                      <AlertDialogTrigger className="inline-flex items-center justify-center size-8 rounded-md text-muted-foreground hover:bg-accent transition-colors">
                         <RotateCcw className="size-3.5" />
                       </AlertDialogTrigger>
                       <AlertDialogContent>

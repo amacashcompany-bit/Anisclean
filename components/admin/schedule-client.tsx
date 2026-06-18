@@ -349,7 +349,7 @@ export function AdminScheduleClient({ appointments }: Props) {
                             <Pencil className="size-3.5" />
                           </Button>
                           <AlertDialog>
-                            <AlertDialogTrigger className="inline-flex items-center justify-center size-7 rounded-lg text-destructive hover:bg-accent transition-colors">
+                            <AlertDialogTrigger className="inline-flex items-center justify-center size-7 rounded-md text-destructive hover:bg-accent hover:text-destructive transition-colors">
                               <Trash2 className="size-3.5" />
                             </AlertDialogTrigger>
                             <AlertDialogContent>

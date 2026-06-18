@@ -153,9 +153,9 @@ export function AdminUsersClient({ users }: Props) {
                           {u.role !== "blocked" ? (
                             <AlertDialog>
                               <AlertDialogTrigger
-                                className="inline-flex items-center justify-center size-7 rounded-lg text-destructive hover:bg-accent transition-colors disabled:opacity-50 disabled:pointer-events-none"
                                 disabled={u.role === "admin"}
                                 title={t("admin.users.block")}
+                                className="inline-flex items-center justify-center size-7 rounded-md text-destructive hover:bg-accent hover:text-destructive transition-colors disabled:pointer-events-none disabled:opacity-40"
                               >
                                 <UserX className="size-3.5" />
                               </AlertDialogTrigger>
