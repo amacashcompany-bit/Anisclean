@@ -15,12 +15,14 @@ export function SiteHeader() {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border bg-background/90 backdrop-blur-md">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-3 px-4 md:px-6">
-        <Link href="/" className="flex items-center gap-3">
-          <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground">
+        <Link href="/" className="flex shrink-0 items-center gap-3">
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground">
             <Sparkles className="h-5 w-5" />
           </span>
           <span className="flex flex-col leading-none">
-            <span className="text-base font-extrabold uppercase tracking-tight text-foreground">{site.name}</span>
+            <span className="whitespace-nowrap text-base font-extrabold uppercase tracking-tight text-foreground">
+              {site.name}
+            </span>
             <span className="text-[0.65rem] font-medium uppercase tracking-[0.2em] text-muted-foreground">
               {t("brand.tagline")}
             </span>

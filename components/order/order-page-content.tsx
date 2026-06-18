@@ -16,7 +16,7 @@ function MobileBar({ onContinue }: { onContinue: () => void }) {
     <button
       type="button"
       onClick={onContinue}
-      className="fixed inset-x-0 bottom-0 z-40 flex items-center justify-between gap-4 border-t border-border bg-primary px-5 py-4 text-primary-foreground shadow-lg lg:hidden"
+      className="fixed inset-x-0 bottom-16 z-40 flex items-center justify-between gap-4 border-t border-border bg-primary px-5 py-4 text-primary-foreground shadow-lg lg:hidden"
     >
       <span className="flex items-center gap-2">
         <span className="flex h-7 min-w-7 items-center justify-center rounded-full bg-primary-foreground/20 px-2 text-sm font-bold">
@@ -35,7 +35,7 @@ function Inner() {
   const scrollToForm = () => formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" })
 
   return (
-    <main className="bg-secondary/30 pb-24 lg:pb-16">
+    <main className="bg-secondary/30 pb-40 lg:pb-16">
       <div className="mx-auto max-w-6xl px-4 py-10 md:px-6 md:py-14">
         <div className="max-w-2xl">
           <h1 className="text-balance text-3xl font-extrabold tracking-tight text-foreground md:text-4xl">
