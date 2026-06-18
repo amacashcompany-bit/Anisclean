@@ -10,7 +10,7 @@ type Dict = Record<string, string>
 
 export const translations: Record<Lang, Dict> = {
   fr: {
-    "brand.tagline": "NETTOYAGE · NÎMES",
+    "brand.tagline": "NETTOYAGE · DIJON",
     // nav
     "nav.services": "Prestations",
     "nav.simulator": "Crédit d'impôt",
@@ -23,7 +23,7 @@ export const translations: Record<Lang, Dict> = {
     // work / gallery
     "work.badge": "Nos réalisations",
     "work.title": "Avant / après nos interventions",
-    "work.subtitle": "Découvrez quelques chantiers réalisés à Nîmes et alentours. Un seul prestataire, des résultats impeccables.",
+    "work.subtitle": "Découvrez quelques chantiers réalisés à Dijon et alentours. Un seul prestataire, des résultats impeccables.",
     "work.before": "Avant",
     "work.after": "Après",
     "work.compareHint": "Glissez pour comparer",
@@ -50,11 +50,11 @@ export const translations: Record<Lang, Dict> = {
     "common.theme": "Thème",
     "common.language": "Langue",
     // hero
-    "hero.badge": "Entreprise de nettoyage à Nîmes",
+    "hero.badge": "Entreprise de nettoyage à Dijon",
     "hero.title1": "Un intérieur impeccable,",
     "hero.title2": "à partir de 15 €/h",
     "hero.desc":
-      "Ménage à domicile avec crédit d'impôt de 50 %, nettoyage de locaux, remise en état et traitement des nuisibles à Nîmes. On s'occupe de tout.",
+      "Ménage à domicile avec crédit d'impôt de 50 %, nettoyage de locaux, remise en état et traitement des nuisibles à Dijon. On s'occupe de tout.",
     "hero.cta": "Demander un devis gratuit",
     "hero.priceLabel": "Ménage à domicile",
     "hero.priceUnit": "/ heure",
@@ -64,12 +64,12 @@ export const translations: Record<Lang, Dict> = {
     "hero.f3": "Personnel de confiance",
     "hero.f4": "Produits adaptés à votre logement",
     "hero.f5": "Paiement CESU accepté",
-    "hero.rating": "Clients satisfaits à Nîmes",
+    "hero.rating": "Clients satisfaits à Dijon",
     // services
     "services.badge": "Nos prestations",
     "services.title": "Un seul prestataire pour tout nettoyer",
     "services.desc":
-      "Ménage, remise en état, vitres, nuisibles, bureaux : tous vos besoins à Nîmes, avec un seul interlocuteur.",
+      "Ménage, remise en état, vitres, nuisibles, bureaux : tous vos besoins à Dijon, avec un seul interlocuteur.",
     "svc.menage.name": "Ménage & nettoyage",
     "svc.menage.desc": "Entretien régulier de votre logement ou grand nettoyage de printemps.",
     "svc.remise.name": "Remise en état",
@@ -105,8 +105,8 @@ export const translations: Record<Lang, Dict> = {
     "process.s3d": "Vous recevez une attestation et profitez de 50 % de crédit d'impôt.",
     // area
     "area.badge": "Zone d'intervention",
-    "area.title": "Nîmes et alentours",
-    "area.desc": "Nous intervenons à Nîmes et dans les communes du Gard situées à proximité.",
+    "area.title": "Dijon et alentours",
+    "area.desc": "Nous intervenons à Dijon et dans les communes de Côte-d'Or situées à proximité.",
     // reviews
     "reviews.badge": "Avis clients",
     "reviews.title": "Ils nous font confiance",
@@ -323,7 +323,7 @@ export const translations: Record<Lang, Dict> = {
     "admin.dash.recentOrders": "Commandes récentes",
   },
   en: {
-    "brand.tagline": "CLEANING · NÎMES",
+    "brand.tagline": "CLEANING · DIJON",
     "nav.services": "Services",
     "nav.simulator": "Tax credit",
     "nav.process": "How it works",
@@ -337,7 +337,7 @@ export const translations: Record<Lang, Dict> = {
     // work / gallery
     "work.badge": "Our work",
     "work.title": "Before / after our work",
-    "work.subtitle": "See a few jobs done across Nîmes and nearby. One provider, spotless results.",
+    "work.subtitle": "See a few jobs done across Dijon and nearby. One provider, spotless results.",
     "work.before": "Before",
     "work.after": "After",
     "work.compareHint": "Drag to compare",
@@ -361,11 +361,11 @@ export const translations: Record<Lang, Dict> = {
     "common.taxBadge": "50% tax credit",
     "common.theme": "Theme",
     "common.language": "Language",
-    "hero.badge": "Cleaning company in Nîmes",
+    "hero.badge": "Cleaning company in Dijon",
     "hero.title1": "A spotless home,",
     "hero.title2": "from €15/h",
     "hero.desc":
-      "Home cleaning with a 50% tax credit, commercial cleaning, restoration and pest control in Nîmes. We handle everything.",
+      "Home cleaning with a 50% tax credit, commercial cleaning, restoration and pest control in Dijon. We handle everything.",
     "hero.cta": "Get a free quote",
     "hero.priceLabel": "Home cleaning",
     "hero.priceUnit": "/ hour",
@@ -375,11 +375,11 @@ export const translations: Record<Lang, Dict> = {
     "hero.f3": "Trusted staff",
     "hero.f4": "Products suited to your home",
     "hero.f5": "CESU payment accepted",
-    "hero.rating": "Happy clients in Nîmes",
+    "hero.rating": "Happy clients in Dijon",
     "services.badge": "Our services",
     "services.title": "One provider to clean everything",
     "services.desc":
-      "Cleaning, restoration, windows, pests, offices: all your needs in Nîmes with a single point of contact.",
+      "Cleaning, restoration, windows, pests, offices: all your needs in Dijon with a single point of contact.",
     "svc.menage.name": "Cleaning & housekeeping",
     "svc.menage.desc": "Regular upkeep of your home or a deep spring clean.",
     "svc.remise.name": "Restoration cleaning",
@@ -412,8 +412,8 @@ export const translations: Record<Lang, Dict> = {
     "process.s3t": "Tax credit",
     "process.s3d": "You receive a certificate and enjoy a 50% tax credit.",
     "area.badge": "Service area",
-    "area.title": "Nîmes and surroundings",
-    "area.desc": "We operate in Nîmes and nearby towns in the Gard area.",
+    "area.title": "Dijon and surroundings",
+    "area.desc": "We operate in Dijon and nearby towns in the Côte-d'Or area.",
     "reviews.badge": "Client reviews",
     "reviews.title": "They trust us",
     "reviews.empty": "Be the first to leave a review!",
@@ -656,7 +656,7 @@ export const translations: Record<Lang, Dict> = {
     "common.language": "اللغة",
     "hero.badge": "شركة تنظيف في نيم",
     "hero.title1": "منزل نظيف تماماً،",
-    "hero.title2": "ابتداءً من 15 يورو/ساعة",
+    "hero.title2": "ابتداءً م�� 15 يورو/ساعة",
     "hero.desc":
       "تنظيف منزلي مع خصم ضريب�� 50٪، تنظيف المحلات، إعادة التأهيل ومكافحة الحشرات في نيم. نتكفل بكل شيء.",
     "hero.cta": "احصل على عرض سعر مجاني",

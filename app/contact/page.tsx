@@ -42,8 +42,8 @@ const contactItems = [
   {
     icon: MapPin,
     label: "Adresse",
-    value: "20 rue Général Delestraint, 30000 Nîmes",
-    href: "https://maps.google.com/?q=20+rue+Général+Delestraint,+30000+Nîmes",
+    value: "Dijon et alentours, 21000 France",
+    href: "https://maps.google.com/?q=Dijon,+21000+France",
     color: "text-orange-600",
     bg: "bg-orange-50",
     external: true,
@@ -62,7 +62,7 @@ const guarantees = [
   "Devis gratuit sous 24 h",
   "Aucun engagement",
   "Réponse rapide garantie",
-  "Intervention à Nîmes et 30 km alentours",
+  "Intervention à Dijon et 30 km alentours",
 ]
 
 export default function ContactPage() {
