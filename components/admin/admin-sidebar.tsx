@@ -14,6 +14,7 @@ import {
   ShieldCheck,
   Star,
   LogOut,
+  Images,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useI18n } from "@/components/providers/i18n-provider"
@@ -27,6 +28,7 @@ const navItems = [
   { key: "admin.nav.invoices", href: "/admin/invoices", icon: FileText },
   { key: "admin.nav.schedule", href: "/admin/schedule", icon: CalendarDays },
   { key: "admin.nav.services", href: "/admin/services", icon: Wrench },
+  { key: "admin.nav.realisations", href: "/admin/realisations", icon: Images },
   { key: "admin.nav.reviews", href: "/admin/reviews", icon: Star },
   { key: "admin.nav.users", href: "/admin/users", icon: Users },
   { key: "admin.nav.settings", href: "/admin/settings", icon: Settings },

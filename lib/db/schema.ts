@@ -183,6 +183,19 @@ export const customServices = pgTable("custom_services", {
   updatedAt: timestamp("updatedAt").notNull().defaultNow(),
 })
 
+// --- Réalisations (before/after gallery) ------------------------------------
+
+export const realisations = pgTable("realisations", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  tag: text("tag"),
+  beforeUrl: text("beforeUrl").notNull(),
+  afterUrl: text("afterUrl").notNull(),
+  published: boolean("published").notNull().default(true),
+  sortOrder: integer("sortOrder").notNull().default(0),
+  createdAt: timestamp("createdAt").notNull().defaultNow(),
+})
+
 export const reviews = pgTable("reviews", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),

@@ -10,6 +10,7 @@ import {
   reviews,
   user,
   customServices,
+  realisations,
   type InvoiceItem,
   type ServiceOverride,
   type RecurringRule,
@@ -353,6 +354,60 @@ export async function deleteCustomService(id: string) {
   await db.delete(customServices).where(eq(customServices.id, id))
   revalidatePath("/admin/services")
   revalidatePath("/tarifs")
+}
+
+// ── Réalisations (before/after gallery) ──────────────────────────────────────
+
+export async function getRealisations() {
+  await requireAdmin()
+  return db.select().from(realisations).orderBy(realisations.sortOrder, realisations.createdAt)
+}
+
+export async function getRealisationsPublic() {
+  return db
+    .select()
+    .from(realisations)
+    .where(eq(realisations.published, true))
+    .orderBy(realisations.sortOrder, realisations.createdAt)
+}
+
+export async function createRealisation(data: {
+  title: string
+  tag?: string
+  beforeUrl: string
+  afterUrl: string
+  published?: boolean
+  sortOrder?: number
+}) {
+  await requireAdmin()
+  const [row] = await db.insert(realisations).values(data).returning()
+  revalidatePath("/admin/realisations")
+  revalidatePath("/realisations")
+  return row
+}
+
+export async function updateRealisation(
+  id: number,
+  data: Partial<{
+    title: string
+    tag: string
+    beforeUrl: string
+    afterUrl: string
+    published: boolean
+    sortOrder: number
+  }>
+) {
+  await requireAdmin()
+  await db.update(realisations).set(data).where(eq(realisations.id, id))
+  revalidatePath("/admin/realisations")
+  revalidatePath("/realisations")
+}
+
+export async function deleteRealisation(id: number) {
+  await requireAdmin()
+  await db.delete(realisations).where(eq(realisations.id, id))
+  revalidatePath("/admin/realisations")
+  revalidatePath("/realisations")
 }
 
 // ── Reviews (public + admin) ──────────────────────────────────────────────────
