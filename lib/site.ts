@@ -12,6 +12,7 @@ export const navLinks = [
   { key: "nav.simulator", href: "/#credit-impot" },
   { key: "nav.process", href: "/#process" },
   { key: "nav.area", href: "/#zone" },
+  { key: "nav.work", href: "/realisations" },
   { key: "nav.reviews", href: "/#avis" },
   { key: "nav.faq", href: "/#faq" },
 ]
