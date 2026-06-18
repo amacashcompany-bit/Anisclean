@@ -347,6 +347,7 @@ export async function createCustomService(data: {
   name: string
   description?: string
   icon?: string
+  imageUrl?: string
   hourlyRate?: number
   hourlyLabel?: string
   packages?: CustomPackage[]
@@ -373,6 +374,7 @@ export async function updateCustomService(
     name: string
     description: string
     icon: string
+    imageUrl: string
     hourlyRate: number
     hourlyLabel: string
     packages: CustomPackage[]

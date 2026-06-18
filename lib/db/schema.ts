@@ -176,6 +176,7 @@ export const customServices = pgTable("custom_services", {
   packages: jsonb("packages").$type<CustomPackage[]>(),
   packagesTitle: text("packagesTitle"),
   fromLabel: text("fromLabel"),
+  imageUrl: text("imageUrl"),
   taxEligible: boolean("taxEligible").notNull().default(false),
   active: boolean("active").notNull().default(true),
   sortOrder: integer("sortOrder").notNull().default(0),

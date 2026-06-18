@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useTransition } from "react"
+import { useState, useTransition, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { useI18n } from "@/components/providers/i18n-provider"
 import {
@@ -13,6 +13,7 @@ import {
 import { services } from "@/lib/services"
 import type { serviceOverrides, customServices } from "@/lib/db/schema"
 import type { InferSelectModel } from "drizzle-orm"
+import Image from "next/image"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -50,6 +51,10 @@ import {
   CheckCircle2,
   Tag,
   Layers,
+  Sparkles,
+  Upload,
+  X,
+  ImageIcon,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -138,6 +143,11 @@ export function AdminServicesClient({ overrides, customServicesList }: Props) {
     sortOrder: "0",
   })
   const [packages, setPackages] = useState<CustomPackageRow[]>([])
+  const [imageUrl, setImageUrl] = useState<string>("")
+  const [imageLoading, setImageLoading] = useState(false)
+  const [aiPrompt, setAiPrompt] = useState("")
+  const [showAiPrompt, setShowAiPrompt] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   function openCreateCustom() {
     setCustomForm({
@@ -152,6 +162,9 @@ export function AdminServicesClient({ overrides, customServicesList }: Props) {
       sortOrder: String(customServicesList.length),
     })
     setPackages([])
+    setImageUrl("")
+    setAiPrompt("")
+    setShowAiPrompt(false)
     setCustomDialog("create")
   }
 
@@ -170,6 +183,9 @@ export function AdminServicesClient({ overrides, customServicesList }: Props) {
     setPackages(
       (svc.packages ?? []).map((p) => ({ id: p.id, label: p.label, price: String(p.price) }))
     )
+    setImageUrl(svc.imageUrl ?? "")
+    setAiPrompt("")
+    setShowAiPrompt(false)
     setCustomDialog(svc.id)
   }
 
@@ -185,6 +201,40 @@ export function AdminServicesClient({ overrides, customServicesList }: Props) {
     setPackages((prev) => prev.map((p, i) => (i === idx ? { ...p, [field]: value } : p)))
   }
 
+  async function handleFileUpload(file: File) {
+    if (!file.type.startsWith("image/")) return
+    setImageLoading(true)
+    try {
+      const formData = new FormData()
+      formData.append("file", file)
+      const res = await fetch("/api/upload-image", { method: "POST", body: formData })
+      const json = await res.json()
+      if (json.url) setImageUrl(json.url)
+    } finally {
+      setImageLoading(false)
+    }
+  }
+
+  async function handleAiGenerate() {
+    const prompt = aiPrompt.trim() || customForm.name
+    if (!prompt) return
+    setImageLoading(true)
+    try {
+      const res = await fetch("/api/generate-service-image", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt }),
+      })
+      const json = await res.json()
+      if (json.url) {
+        setImageUrl(json.url)
+        setShowAiPrompt(false)
+      }
+    } finally {
+      setImageLoading(false)
+    }
+  }
+
   function handleCustomSave() {
     startTransition(async () => {
       const pkgs = packages
@@ -195,6 +245,7 @@ export function AdminServicesClient({ overrides, customServicesList }: Props) {
         name: customForm.name,
         description: customForm.description || undefined,
         icon: "Wrench",
+        imageUrl: imageUrl || undefined,
         hourlyRate: customForm.hourlyRate ? Number(customForm.hourlyRate) : undefined,
         hourlyLabel: customForm.hourlyLabel || undefined,
         packages: pkgs.length ? pkgs : undefined,
@@ -367,14 +418,22 @@ export function AdminServicesClient({ overrides, customServicesList }: Props) {
                 <Card
                   key={svc.id}
                   className={cn(
-                    "relative transition-shadow hover:shadow-md border-border/70",
+                    "relative transition-shadow hover:shadow-md border-border/70 overflow-hidden",
                     !svc.active && "opacity-55"
                   )}
                 >
-                  <CardHeader className="flex flex-row items-start gap-3 pb-2">
-                    <div className="flex items-center justify-center size-9 rounded-lg bg-accent/15 text-accent shrink-0">
-                      <Wrench className="size-5" />
+                  {/* Image preview on card */}
+                  {svc.imageUrl && (
+                    <div className="relative h-32 w-full overflow-hidden bg-muted">
+                      <Image src={svc.imageUrl} alt={svc.name} fill className="object-cover" />
                     </div>
+                  )}
+                  <CardHeader className="flex flex-row items-start gap-3 pb-2">
+                    {!svc.imageUrl && (
+                      <div className="flex items-center justify-center size-9 rounded-lg bg-accent/15 text-accent shrink-0">
+                        <Wrench className="size-5" />
+                      </div>
+                    )}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
                         <CardTitle className="text-sm leading-snug">{svc.name}</CardTitle>
@@ -527,11 +586,12 @@ export function AdminServicesClient({ overrides, customServicesList }: Props) {
               {customDialog === "create" ? "Nouveau service" : "Modifier le service"}
             </DialogTitle>
             <DialogDescription>
-              Définissez le nom, la description, les tarifs et les forfaits.
+              Définissez le nom, la description, les tarifs, une image et les forfaits.
             </DialogDescription>
           </DialogHeader>
 
           <div className="flex flex-col gap-4 py-2">
+            {/* Name */}
             <div className="flex flex-col gap-1.5">
               <Label>Nom du service <span className="text-destructive">*</span></Label>
               <Input
@@ -541,6 +601,7 @@ export function AdminServicesClient({ overrides, customServicesList }: Props) {
               />
             </div>
 
+            {/* Description */}
             <div className="flex flex-col gap-1.5">
               <Label>Description</Label>
               <Textarea
@@ -553,6 +614,120 @@ export function AdminServicesClient({ overrides, customServicesList }: Props) {
 
             <Separator />
 
+            {/* Image section */}
+            <div className="flex flex-col gap-2">
+              <Label className="flex items-center gap-1.5">
+                <ImageIcon className="size-3.5 text-muted-foreground" />
+                Image du service
+              </Label>
+
+              {/* Current image preview */}
+              {imageUrl ? (
+                <div className="relative h-36 w-full rounded-lg overflow-hidden border border-border bg-muted">
+                  <Image src={imageUrl} alt="Aperçu" fill className="object-cover" />
+                  <button
+                    type="button"
+                    onClick={() => setImageUrl("")}
+                    className="absolute top-2 right-2 flex items-center justify-center size-6 rounded-full bg-background/80 text-foreground hover:bg-background transition-colors"
+                    title="Supprimer l'image"
+                  >
+                    <X className="size-3.5" />
+                  </button>
+                </div>
+              ) : (
+                <div
+                  className={cn(
+                    "flex flex-col items-center justify-center h-28 rounded-lg border-2 border-dashed border-border bg-muted/40 transition-colors cursor-pointer hover:border-accent/50",
+                    imageLoading && "opacity-60 pointer-events-none"
+                  )}
+                  onClick={() => fileInputRef.current?.click()}
+                  onDragOver={(e) => e.preventDefault()}
+                  onDrop={(e) => {
+                    e.preventDefault()
+                    const file = e.dataTransfer.files[0]
+                    if (file) handleFileUpload(file)
+                  }}
+                >
+                  {imageLoading ? (
+                    <div className="flex flex-col items-center gap-2 text-muted-foreground">
+                      <div className="size-5 border-2 border-accent border-t-transparent rounded-full animate-spin" />
+                      <span className="text-xs">Génération en cours…</span>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col items-center gap-1 text-muted-foreground">
+                      <Upload className="size-5" />
+                      <span className="text-xs">Glissez une image ou cliquez pour choisir</span>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Hidden file input */}
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => {
+                  const file = e.target.files?.[0]
+                  if (file) handleFileUpload(file)
+                  e.target.value = ""
+                }}
+              />
+
+              {/* Action buttons */}
+              <div className="flex gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="flex-1 gap-1.5 text-xs"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={imageLoading}
+                >
+                  <Upload className="size-3.5" />
+                  Depuis la galerie
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="flex-1 gap-1.5 text-xs border-accent/40 text-accent hover:bg-accent/5"
+                  onClick={() => setShowAiPrompt((v) => !v)}
+                  disabled={imageLoading}
+                >
+                  <Sparkles className="size-3.5" />
+                  Générer avec l&apos;IA
+                </Button>
+              </div>
+
+              {/* AI prompt input */}
+              {showAiPrompt && (
+                <div className="flex gap-2 items-center">
+                  <Input
+                    placeholder={customForm.name || "Décrivez l'image souhaitée…"}
+                    value={aiPrompt}
+                    onChange={(e) => setAiPrompt(e.target.value)}
+                    className="h-8 text-sm flex-1"
+                    onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); handleAiGenerate() } }}
+                  />
+                  <Button
+                    type="button"
+                    size="sm"
+                    className="h-8 gap-1.5 shrink-0"
+                    onClick={handleAiGenerate}
+                    disabled={imageLoading}
+                  >
+                    <Sparkles className="size-3.5" />
+                    Générer
+                  </Button>
+                </div>
+              )}
+            </div>
+
+            <Separator />
+
+            {/* Pricing */}
             <div className="grid grid-cols-2 gap-3">
               <div className="flex flex-col gap-1.5">
                 <Label>Tarif horaire (€)</Label>
@@ -585,6 +760,7 @@ export function AdminServicesClient({ overrides, customServicesList }: Props) {
 
             <Separator />
 
+            {/* Packages */}
             <div className="flex flex-col gap-2">
               <div className="flex items-center justify-between">
                 <div>
@@ -646,6 +822,7 @@ export function AdminServicesClient({ overrides, customServicesList }: Props) {
 
             <Separator />
 
+            {/* Toggles */}
             <div className="flex flex-col gap-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">

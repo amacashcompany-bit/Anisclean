@@ -63,6 +63,26 @@ export async function ensureAdminSchema() {
         approved    boolean NOT NULL DEFAULT false,
         "createdAt" timestamptz NOT NULL DEFAULT now()
       );
+
+      CREATE TABLE IF NOT EXISTS custom_services (
+        id              text PRIMARY KEY,
+        name            text NOT NULL,
+        description     text,
+        icon            text NOT NULL DEFAULT 'Wrench',
+        "imageUrl"      text,
+        "hourlyRate"    real,
+        "hourlyLabel"   text,
+        packages        jsonb,
+        "packagesTitle" text,
+        "fromLabel"     text,
+        "taxEligible"   boolean NOT NULL DEFAULT false,
+        active          boolean NOT NULL DEFAULT true,
+        "sortOrder"     int  NOT NULL DEFAULT 0,
+        "createdAt"     timestamptz NOT NULL DEFAULT now(),
+        "updatedAt"     timestamptz NOT NULL DEFAULT now()
+      );
+
+      ALTER TABLE custom_services ADD COLUMN IF NOT EXISTS "imageUrl" text;
     `)
   } finally {
     client.release()
