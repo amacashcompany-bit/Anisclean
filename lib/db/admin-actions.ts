@@ -7,6 +7,7 @@ import {
   serviceOverrides,
   appointments,
   siteSettings,
+  reviews,
   user,
   type InvoiceItem,
   type ServiceOverride,
@@ -279,4 +280,53 @@ export async function getAnalytics() {
     monthlyOrders: monthlyOrders.rows as { month: string; count: number; revenue: number }[],
     byStatus: byStatus.rows as { status: string; count: number }[],
   }
+}
+
+// ── Reviews (public + admin) ──────────────────────────────────────────────────
+
+/** Public: submit a new review (pending approval) */
+export async function submitReview(data: {
+  name: string
+  city?: string
+  rating: number
+  text: string
+}) {
+  if (!data.name?.trim() || !data.text?.trim()) throw new Error("Missing fields")
+  const rating = Math.max(1, Math.min(5, data.rating))
+  const [row] = await db
+    .insert(reviews)
+    .values({ name: data.name.trim(), city: data.city?.trim() || null, rating, text: data.text.trim() })
+    .returning()
+  return row
+}
+
+/** Public: get all approved reviews */
+export async function getApprovedReviews() {
+  return db
+    .select()
+    .from(reviews)
+    .where(eq(reviews.approved, true))
+    .orderBy(desc(reviews.createdAt))
+}
+
+/** Admin: get all reviews (pending + approved) */
+export async function getAllReviews() {
+  await requireAdmin()
+  return db.select().from(reviews).orderBy(desc(reviews.createdAt))
+}
+
+/** Admin: approve a review */
+export async function approveReview(id: number) {
+  await requireAdmin()
+  await db.update(reviews).set({ approved: true }).where(eq(reviews.id, id))
+  revalidatePath("/admin/reviews")
+  revalidatePath("/")
+}
+
+/** Admin: reject/delete a review */
+export async function deleteReview(id: number) {
+  await requireAdmin()
+  await db.delete(reviews).where(eq(reviews.id, id))
+  revalidatePath("/admin/reviews")
+  revalidatePath("/")
 }

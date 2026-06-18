@@ -8,8 +8,24 @@ import { TestimonialsSection } from "@/components/testimonials-section"
 import { FaqSection } from "@/components/faq-section"
 import { SiteFooter } from "@/components/site-footer"
 import { FloatingContact } from "@/components/floating-contact"
+import { getApprovedReviews } from "@/lib/db/admin-actions"
+import { ensureAdminSchema } from "@/lib/db/ensure-schema"
 
-export default function Page() {
+export default async function Page() {
+  // Bootstrap DB tables idempotently on first load
+  try {
+    await ensureAdminSchema()
+  } catch {
+    // ignore – runs before tables exist on first deploy
+  }
+
+  let reviews: Awaited<ReturnType<typeof getApprovedReviews>> = []
+  try {
+    reviews = await getApprovedReviews()
+  } catch {
+    // DB might not be ready yet; silently fall back to empty list
+  }
+
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <SiteHeader />
@@ -19,7 +35,7 @@ export default function Page() {
         <CreditSimulatorSection />
         <ProcessSection />
         <AreaSection />
-        <TestimonialsSection />
+        <TestimonialsSection initialReviews={reviews} />
         <FaqSection />
       </main>
       <SiteFooter />

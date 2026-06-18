@@ -5,6 +5,7 @@ import './globals.css'
 import { ThemeProvider } from '@/components/providers/theme-provider'
 import { I18nProvider } from '@/components/providers/i18n-provider'
 import { MobileTabBar } from '@/components/mobile-tab-bar'
+import { Toaster } from 'sonner'
 
 const inter = Inter({ variable: '--font-inter', subsets: ['latin'] })
 const cairo = Cairo({ variable: '--font-cairo', subsets: ['arabic', 'latin'] })
@@ -43,6 +44,7 @@ export default function RootLayout({
           <I18nProvider>
             {children}
             <MobileTabBar />
+            <Toaster richColors position="top-right" />
           </I18nProvider>
         </ThemeProvider>
         {process.env.NODE_ENV === 'production' && <Analytics />}

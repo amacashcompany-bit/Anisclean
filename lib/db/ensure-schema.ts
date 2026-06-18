@@ -53,6 +53,16 @@ export async function ensureAdminSchema() {
         value       text NOT NULL,
         "updatedAt" timestamptz NOT NULL DEFAULT now()
       );
+
+      CREATE TABLE IF NOT EXISTS reviews (
+        id          serial PRIMARY KEY,
+        name        text NOT NULL,
+        city        text,
+        rating      int  NOT NULL DEFAULT 5,
+        text        text NOT NULL,
+        approved    boolean NOT NULL DEFAULT false,
+        "createdAt" timestamptz NOT NULL DEFAULT now()
+      );
     `)
   } finally {
     client.release()

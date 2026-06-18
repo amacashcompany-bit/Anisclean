@@ -157,3 +157,14 @@ export const siteSettings = pgTable("site_settings", {
   value: text("value").notNull(),
   updatedAt: timestamp("updatedAt").notNull().defaultNow(),
 })
+
+export const reviews = pgTable("reviews", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  city: text("city"),
+  rating: integer("rating").notNull().default(5), // 1–5
+  text: text("text").notNull(),
+  // status: pending | approved | rejected
+  approved: boolean("approved").notNull().default(false),
+  createdAt: timestamp("createdAt").notNull().defaultNow(),
+})
