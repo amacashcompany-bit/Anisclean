@@ -3,7 +3,7 @@ import { site } from "@/lib/site"
 
 export function FloatingContact() {
   return (
-    <div className="fixed bottom-5 end-5 z-50 flex flex-col gap-3">
+    <div className="fixed bottom-20 end-4 z-50 flex flex-col gap-3 lg:bottom-5 lg:end-5">
       <a
         href={site.whatsappHref}
         target="_blank"
@@ -16,7 +16,7 @@ export function FloatingContact() {
       <a
         href={site.phoneHref}
         aria-label={`Appeler le ${site.phoneDisplay}`}
-        className="flex h-14 w-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition-transform hover:scale-105"
+        className="hidden h-14 w-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition-transform hover:scale-105 lg:flex"
       >
         <Phone className="h-7 w-7" />
       </a>

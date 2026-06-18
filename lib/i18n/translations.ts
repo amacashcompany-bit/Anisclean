@@ -41,6 +41,7 @@ export const translations: Record<Lang, Dict> = {
     "work.terrace": "Terrasse décrassée au nettoyeur",
     "work.terraceTag": "Extérieur",
     "nav.order": "Commander",
+    "nav.home": "Accueil",
     "common.quote": "Demander un devis",
     "common.call": "Appeler",
     "common.from": "dès",
@@ -218,6 +219,7 @@ export const translations: Record<Lang, Dict> = {
     "nav.faq": "FAQ",
     "nav.contact": "Contact",
     "nav.order": "Order",
+    "nav.home": "Home",
     // work / gallery
     "work.badge": "Our work",
     "work.title": "Before / after our work",
@@ -404,6 +406,7 @@ export const translations: Record<Lang, Dict> = {
     "nav.work": "أعمالنا",
     "nav.contact": "اتصل بنا",
     "nav.order": "اطلب الآن",
+    "nav.home": "الرئيسية",
     // work / gallery
     "work.badge": "أعمالنا",
     "work.title": "قبل / بعد أعمالنا",

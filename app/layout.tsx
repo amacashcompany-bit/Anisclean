@@ -4,6 +4,7 @@ import { Inter, Geist_Mono, Cairo } from 'next/font/google'
 import './globals.css'
 import { ThemeProvider } from '@/components/providers/theme-provider'
 import { I18nProvider } from '@/components/providers/i18n-provider'
+import { MobileTabBar } from '@/components/mobile-tab-bar'
 
 const inter = Inter({ variable: '--font-inter', subsets: ['latin'] })
 const cairo = Cairo({ variable: '--font-cairo', subsets: ['arabic', 'latin'] })
@@ -37,9 +38,12 @@ export default function RootLayout({
       suppressHydrationWarning
       className={`${inter.variable} ${cairo.variable} ${geistMono.variable} bg-background`}
     >
-      <body className="font-sans antialiased">
+      <body className="font-sans antialiased pb-16 lg:pb-0">
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false} disableTransitionOnChange>
-          <I18nProvider>{children}</I18nProvider>
+          <I18nProvider>
+            {children}
+            <MobileTabBar />
+          </I18nProvider>
         </ThemeProvider>
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>
