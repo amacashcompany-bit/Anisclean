@@ -25,6 +25,7 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     document.documentElement.lang = lang
     document.documentElement.dir = dir
+    document.documentElement.classList.toggle("font-arabic", lang === "ar")
   }, [lang, dir])
 
   const setLang = useCallback((l: Lang) => {

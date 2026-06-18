@@ -1,11 +1,12 @@
 import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
-import { Inter, Geist_Mono } from 'next/font/google'
+import { Inter, Geist_Mono, Cairo } from 'next/font/google'
 import './globals.css'
 import { ThemeProvider } from '@/components/providers/theme-provider'
 import { I18nProvider } from '@/components/providers/i18n-provider'
 
 const inter = Inter({ variable: '--font-inter', subsets: ['latin'] })
+const cairo = Cairo({ variable: '--font-cairo', subsets: ['arabic', 'latin'] })
 const geistMono = Geist_Mono({
   variable: '--font-geist-mono',
   subsets: ['latin'],
@@ -34,7 +35,7 @@ export default function RootLayout({
     <html
       lang="fr"
       suppressHydrationWarning
-      className={`${inter.variable} ${geistMono.variable} bg-background`}
+      className={`${inter.variable} ${cairo.variable} ${geistMono.variable} bg-background`}
     >
       <body className="font-sans antialiased">
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false} disableTransitionOnChange>

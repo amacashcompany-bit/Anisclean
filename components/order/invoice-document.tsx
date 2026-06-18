@@ -34,7 +34,7 @@ interface Props {
 const C = {
   ink: "#1e2a44",
   sub: "#5b6678",
-  accent: "#1f8a8a",
+  accent: "#1f74c4",
   line: "#e2e8f0",
   soft: "#f1f5f9",
   white: "#ffffff",
@@ -54,7 +54,10 @@ export const InvoiceDocument = forwardRef<HTMLDivElement, Props>(function Invoic
         width: 720,
         background: C.white,
         color: C.ink,
-        fontFamily: "Inter, Arial, sans-serif",
+        fontFamily:
+          lang === "ar"
+            ? "var(--font-cairo), Inter, Arial, sans-serif"
+            : "Inter, Arial, sans-serif",
         padding: 40,
         boxSizing: "border-box",
         textAlign: dir === "rtl" ? "right" : "left",

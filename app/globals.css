@@ -124,6 +124,16 @@
   direction: rtl;
 }
 
+/* Use Cairo (Arabic-capable) font when the document is in Arabic */
+html.font-arabic,
+html.font-arabic body,
+html.font-arabic button,
+html.font-arabic input,
+html.font-arabic textarea,
+html.font-arabic select {
+  font-family: var(--font-cairo), var(--font-inter), 'Inter Fallback', sans-serif !important;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
