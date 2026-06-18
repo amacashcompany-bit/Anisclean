@@ -158,6 +158,31 @@ export const siteSettings = pgTable("site_settings", {
   updatedAt: timestamp("updatedAt").notNull().defaultNow(),
 })
 
+// --- Custom Services (admin-created, not in services.ts) --------------------
+
+export type CustomPackage = {
+  id: string
+  label: string
+  price: number
+}
+
+export const customServices = pgTable("custom_services", {
+  id: text("id").primaryKey(),
+  name: text("name").notNull(),
+  description: text("description"),
+  icon: text("icon").notNull().default("Wrench"),
+  hourlyRate: real("hourlyRate"),
+  hourlyLabel: text("hourlyLabel"),
+  packages: jsonb("packages").$type<CustomPackage[]>(),
+  packagesTitle: text("packagesTitle"),
+  fromLabel: text("fromLabel"),
+  taxEligible: boolean("taxEligible").notNull().default(false),
+  active: boolean("active").notNull().default(true),
+  sortOrder: integer("sortOrder").notNull().default(0),
+  createdAt: timestamp("createdAt").notNull().defaultNow(),
+  updatedAt: timestamp("updatedAt").notNull().defaultNow(),
+})
+
 export const reviews = pgTable("reviews", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),

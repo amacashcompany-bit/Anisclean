@@ -9,9 +9,11 @@ import {
   siteSettings,
   reviews,
   user,
+  customServices,
   type InvoiceItem,
   type ServiceOverride,
   type RecurringRule,
+  type CustomPackage,
 } from "@/lib/db/schema"
 import { eq, desc, sql } from "drizzle-orm"
 import { auth } from "@/lib/auth"
@@ -228,7 +230,7 @@ export async function upsertSiteSetting(key: string, value: string) {
   revalidatePath("/admin")
 }
 
-// ── Analytics ─────────────────────────────────────────────────────────────────
+// ── Analytics ──────────────────���──────────────────────────────────────────────
 export async function getAnalytics() {
   await requireAdmin()
 
@@ -280,6 +282,77 @@ export async function getAnalytics() {
     monthlyOrders: monthlyOrders.rows as { month: string; count: number; revenue: number }[],
     byStatus: byStatus.rows as { status: string; count: number }[],
   }
+}
+
+// ── Custom Services ───────────────────────────────────────────────────────────
+
+export async function getCustomServices() {
+  await requireAdmin()
+  return db.select().from(customServices).orderBy(customServices.sortOrder, customServices.createdAt)
+}
+
+export async function getCustomServicesPublic() {
+  return db
+    .select()
+    .from(customServices)
+    .where(eq(customServices.active, true))
+    .orderBy(customServices.sortOrder, customServices.createdAt)
+}
+
+export async function createCustomService(data: {
+  name: string
+  description?: string
+  icon?: string
+  hourlyRate?: number
+  hourlyLabel?: string
+  packages?: CustomPackage[]
+  packagesTitle?: string
+  fromLabel?: string
+  taxEligible?: boolean
+  active?: boolean
+  sortOrder?: number
+}) {
+  await requireAdmin()
+  const id = `custom-${Date.now()}`
+  const [row] = await db
+    .insert(customServices)
+    .values({ ...data, id, updatedAt: new Date() })
+    .returning()
+  revalidatePath("/admin/services")
+  revalidatePath("/tarifs")
+  return row
+}
+
+export async function updateCustomService(
+  id: string,
+  data: Partial<{
+    name: string
+    description: string
+    icon: string
+    hourlyRate: number
+    hourlyLabel: string
+    packages: CustomPackage[]
+    packagesTitle: string
+    fromLabel: string
+    taxEligible: boolean
+    active: boolean
+    sortOrder: number
+  }>
+) {
+  await requireAdmin()
+  await db
+    .update(customServices)
+    .set({ ...data, updatedAt: new Date() })
+    .where(eq(customServices.id, id))
+  revalidatePath("/admin/services")
+  revalidatePath("/tarifs")
+}
+
+export async function deleteCustomService(id: string) {
+  await requireAdmin()
+  await db.delete(customServices).where(eq(customServices.id, id))
+  revalidatePath("/admin/services")
+  revalidatePath("/tarifs")
 }
 
 // ── Reviews (public + admin) ──────────────────────────────────────────────────
