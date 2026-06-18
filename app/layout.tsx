@@ -15,9 +15,9 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: 'Roudjine Clean — Ménage à domicile & nettoyage professionnel à Nîmes',
+  title: 'Zynclean — Ménage à domicile & nettoyage professionnel à Dijon',
   description:
-    'Ménage à domicile avec crédit d’impôt de 50 %, remise en état, nettoyage de vitres, canapés, terrasses et bureaux à Nîmes. Un seul prestataire pour tout nettoyer. Devis gratuit.',
+    'Ménage à domicile avec crédit d'impôt de 50 %, remise en état, nettoyage de vitres, canapés, terrasses et bureaux à Dijon. Un seul prestataire pour tout nettoyer. Devis gratuit.',
   generator: 'v0.app',
 }
 

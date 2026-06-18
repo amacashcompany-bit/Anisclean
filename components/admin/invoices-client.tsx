@@ -182,7 +182,7 @@ export function AdminInvoicesClient({ invoices }: Props) {
       const { jsPDF } = await import("jspdf")
       const doc = new jsPDF({ unit: "mm", format: "a4" })
 
-      const companyName = settings["companyName"] ?? "Sanadclean"
+      const companyName = settings["companyName"] ?? "Zynclean"
       const companyAddress = settings["companyAddress"] ?? ""
       const companyPhone = settings["companyPhone"] ?? ""
       const companyEmail = settings["companyEmail"] ?? ""
