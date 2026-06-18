@@ -43,15 +43,11 @@ export function SiteHeader() {
 
         <div className="hidden items-center gap-2 md:flex">
           <LangThemeControls />
-          <Button asChild variant="outline" className="gap-2 bg-transparent">
-            <a href={site.phoneHref}>
-              <Phone className="h-4 w-4" />
-              {site.phoneDisplay}
-            </a>
+          <Button render={<a href={site.phoneHref} />} variant="outline" className="gap-2 bg-transparent">
+            <Phone className="h-4 w-4" />
+            {site.phoneDisplay}
           </Button>
-          <Button asChild>
-            <Link href="/commande">{t("nav.order")}</Link>
-          </Button>
+          <Button render={<Link href="/commande" />}>{t("nav.order")}</Button>
         </div>
 
         <div className="flex items-center gap-1 md:hidden">
@@ -81,16 +77,16 @@ export function SiteHeader() {
                 {t(link.key)}
               </Link>
             ))}
-            <Button asChild variant="outline" className="mt-2 gap-2 bg-transparent">
-              <a href={site.phoneHref} onClick={() => setOpen(false)}>
-                <Phone className="h-4 w-4" />
-                {site.phoneDisplay}
-              </a>
+            <Button
+              render={<a href={site.phoneHref} onClick={() => setOpen(false)} />}
+              variant="outline"
+              className="mt-2 gap-2 bg-transparent"
+            >
+              <Phone className="h-4 w-4" />
+              {site.phoneDisplay}
             </Button>
-            <Button asChild className="mt-1">
-              <Link href="/commande" onClick={() => setOpen(false)}>
-                {t("nav.order")}
-              </Link>
+            <Button render={<Link href="/commande" onClick={() => setOpen(false)} />} className="mt-1">
+              {t("nav.order")}
             </Button>
           </nav>
         </div>

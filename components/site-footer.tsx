@@ -18,25 +18,26 @@ export function SiteFooter() {
             {t("contact.desc")}
           </p>
           <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <Button asChild size="lg" variant="secondary" className="gap-2">
-              <a href={site.whatsappHref} target="_blank" rel="noopener noreferrer">
-                <MessageCircle className="h-4 w-4" />
-                WhatsApp
-              </a>
+            <Button
+              render={<a href={site.whatsappHref} target="_blank" rel="noopener noreferrer" />}
+              size="lg"
+              variant="secondary"
+              className="gap-2"
+            >
+              <MessageCircle className="h-4 w-4" />
+              WhatsApp
             </Button>
             <Button
-              asChild
+              render={<a href={site.phoneHref} />}
               size="lg"
               variant="outline"
               className="gap-2 border-primary-foreground/30 bg-transparent text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground"
             >
-              <a href={site.phoneHref}>
-                <Phone className="h-4 w-4" />
-                {site.phoneDisplay}
-              </a>
+              <Phone className="h-4 w-4" />
+              {site.phoneDisplay}
             </Button>
-            <Button asChild size="lg" variant="secondary" className="gap-2">
-              <Link href="/commande">{t("nav.order")}</Link>
+            <Button render={<Link href="/commande" />} size="lg" variant="secondary" className="gap-2">
+              {t("nav.order")}
             </Button>
           </div>
         </div>
@@ -76,8 +77,8 @@ export function SiteFooter() {
           <div className="flex flex-col justify-center gap-4 rounded-2xl bg-primary-foreground/5 p-6 ring-1 ring-primary-foreground/10 md:p-8">
             <h3 className="text-2xl font-bold">{t("order.title")}</h3>
             <p className="text-primary-foreground/70">{t("order.subtitle")}</p>
-            <Button asChild size="lg" variant="secondary" className="mt-2 self-start">
-              <Link href="/commande">{t("nav.order")}</Link>
+            <Button render={<Link href="/commande" />} size="lg" variant="secondary" className="mt-2 self-start">
+              {t("nav.order")}
             </Button>
           </div>
         </div>

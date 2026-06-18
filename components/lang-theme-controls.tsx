@@ -3,7 +3,7 @@
 import { Globe, Moon, Sun } from "lucide-react"
 import { useTheme } from "next-themes"
 import { useEffect, useState } from "react"
-import { Button } from "@/components/ui/button"
+import { Button, buttonVariants } from "@/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { useI18n } from "@/components/providers/i18n-provider"
 import { LANGS } from "@/lib/i18n/translations"
+import { cn } from "@/lib/utils"
 
 export function LangThemeControls() {
   const { lang, setLang } = useI18n()
@@ -23,11 +24,15 @@ export function LangThemeControls() {
   return (
     <div className="flex items-center gap-1">
       <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="sm" className="gap-1.5 px-2" aria-label="Language">
-            <Globe className="size-4" />
-            <span className="text-xs font-semibold uppercase">{lang}</span>
-          </Button>
+        <DropdownMenuTrigger
+          aria-label="Language"
+          className={cn(
+            buttonVariants({ variant: "ghost", size: "sm" }),
+            "gap-1.5 px-2",
+          )}
+        >
+          <Globe className="size-4" />
+          <span className="text-xs font-semibold uppercase">{lang}</span>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           {LANGS.map((l) => (

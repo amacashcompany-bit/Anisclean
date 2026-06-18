@@ -20,7 +20,7 @@ export function FaqSection() {
           </h2>
         </div>
 
-        <Accordion type="single" collapsible className="w-full">
+        <Accordion className="w-full">
           {faqs.map((n) => (
             <AccordionItem key={n} value={`item-${n}`} className="border-border">
               <AccordionTrigger className="text-start text-base font-semibold text-foreground hover:no-underline">

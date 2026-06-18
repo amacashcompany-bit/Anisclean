@@ -85,8 +85,8 @@ export function WorkGallery() {
         </div>
 
         <div className="mt-12 flex justify-center">
-          <Button asChild size="lg" className="rounded-full px-8">
-            <Link href="/commande">{t("work.cta")}</Link>
+          <Button render={<Link href="/commande" />} size="lg" className="rounded-full px-8">
+            {t("work.cta")}
           </Button>
         </div>
       </div>

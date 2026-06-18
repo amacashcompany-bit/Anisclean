@@ -83,8 +83,8 @@ export function CreditSimulatorSection() {
             {t("sim.yearlySaving")}: {yearlySavings.toLocaleString(locale)} €
           </p>
 
-          <Button asChild size="lg" className="mt-6 w-full">
-            <Link href="/commande">{t("sim.cta")}</Link>
+          <Button render={<Link href="/commande" />} size="lg" className="mt-6 w-full">
+            {t("sim.cta")}
           </Button>
           <p className="mt-3 text-center text-xs leading-relaxed text-muted-foreground">{t("sim.note")}</p>
         </div>

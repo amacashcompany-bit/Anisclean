@@ -25,8 +25,8 @@ export function AreaSection() {
             {t("area.title")}
           </h2>
           <p className="text-pretty text-lg leading-relaxed text-muted-foreground">{t("area.desc")}</p>
-          <Button asChild size="lg">
-            <Link href="/commande">{t("nav.order")}</Link>
+          <Button render={<Link href="/commande" />} size="lg">
+            {t("nav.order")}
           </Button>
         </div>
 

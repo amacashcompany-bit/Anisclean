@@ -71,8 +71,8 @@ export function ServicesSection() {
         </div>
 
         <div className="mt-10 flex justify-center">
-          <Button asChild size="lg">
-            <Link href="/commande">{t("nav.order")}</Link>
+          <Button render={<Link href="/commande" />} size="lg">
+            {t("nav.order")}
           </Button>
         </div>
       </div>
