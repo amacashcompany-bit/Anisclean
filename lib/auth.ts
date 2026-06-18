@@ -16,6 +16,18 @@ export const auth = betterAuth({
     enabled: true,
     autoSignIn: true,
   },
+  user: {
+    additionalFields: {
+      // Expose the custom `role` column on session.user so the admin layout
+      // can gate access. Without this Better Auth strips unknown fields.
+      role: {
+        type: "string",
+        required: false,
+        defaultValue: "user",
+        input: false,
+      },
+    },
+  },
   databaseHooks: {
     user: {
       create: {
