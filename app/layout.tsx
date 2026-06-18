@@ -5,6 +5,7 @@ import './globals.css'
 import { ThemeProvider } from '@/components/providers/theme-provider'
 import { I18nProvider } from '@/components/providers/i18n-provider'
 import { MobileTabBar } from '@/components/mobile-tab-bar'
+import { SplashScreen } from '@/components/splash-screen'
 import { Toaster } from 'sonner'
 
 const inter = Inter({ variable: '--font-inter', subsets: ['latin'] })
@@ -42,6 +43,7 @@ export default function RootLayout({
       <body className="font-sans antialiased pb-16 lg:pb-0">
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false} disableTransitionOnChange>
           <I18nProvider>
+            <SplashScreen />
             {children}
             <MobileTabBar />
             <Toaster richColors position="top-right" />
