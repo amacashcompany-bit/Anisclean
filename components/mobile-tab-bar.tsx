@@ -21,6 +21,11 @@ export function MobileTabBar() {
   const pathname = usePathname()
   const [callOpen, setCallOpen] = useState(false)
 
+  // The admin area has its own navigation; hide the public tab bar there.
+  if (pathname.startsWith("/admin")) {
+    return null
+  }
+
   const tabs = [
     { key: "nav.home", href: "/", icon: Home, active: pathname === "/" },
     { key: "nav.work", href: "/realisations", icon: Images, active: pathname.startsWith("/realisations") },

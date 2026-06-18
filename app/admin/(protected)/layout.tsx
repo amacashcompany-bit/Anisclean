@@ -31,7 +31,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       </div>
 
       {/* Main content */}
-      <main className="flex-1 overflow-y-auto pb-20 lg:pb-0">
+      <main className="flex-1 overflow-y-auto pb-[calc(5.5rem+env(safe-area-inset-bottom))] lg:pb-0">
         {children}
       </main>
 

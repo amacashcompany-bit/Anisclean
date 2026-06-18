@@ -29,6 +29,7 @@ import {
 } from "lucide-react"
 import type { orders } from "@/lib/db/schema"
 import type { InferSelectModel } from "drizzle-orm"
+import { cn } from "@/lib/utils"
 
 type Order = InferSelectModel<typeof orders>
 
@@ -72,24 +73,28 @@ export function AdminDashboardClient({ analytics, recentOrders }: Props) {
       value: orderStats.total,
       icon: ShoppingCart,
       sub: `${orderStats.completed} terminés`,
+      accent: "bg-chart-1/15 text-chart-1",
     },
     {
       label: t("admin.dash.revenue"),
       value: `${orderStats.revenue.toFixed(0)} €`,
       icon: Euro,
       sub: `${orderStats.inProgress} en cours`,
+      accent: "bg-chart-2/15 text-chart-2",
     },
     {
       label: t("admin.dash.users"),
       value: userStats.total,
       icon: Users,
       sub: "comptes enregistrés",
+      accent: "bg-chart-3/15 text-chart-3",
     },
     {
       label: t("admin.dash.pendingInvoices"),
       value: invoiceStats.pending,
       icon: FileText,
       sub: `${invoiceStats.paid} payées`,
+      accent: "bg-chart-5/15 text-chart-5",
     },
   ]
 
@@ -111,25 +116,39 @@ export function AdminDashboardClient({ analytics, recentOrders }: Props) {
   }
 
   return (
-    <div className="p-6 flex flex-col gap-6">
+    <div className="p-4 sm:p-6 flex flex-col gap-5 sm:gap-6 max-w-7xl mx-auto w-full">
       {/* Page header */}
       <div className="flex items-center gap-3">
-        <TrendingUp className="size-6 text-primary" />
-        <h1 className="text-2xl font-semibold text-foreground">
-          {t("admin.nav.dashboard")}
-        </h1>
+        <div className="flex items-center justify-center size-10 rounded-xl bg-primary/10 text-primary">
+          <TrendingUp className="size-5" />
+        </div>
+        <div>
+          <h1 className="text-xl sm:text-2xl font-semibold text-foreground font-heading leading-tight">
+            {t("admin.nav.dashboard")}
+          </h1>
+          <p className="text-xs sm:text-sm text-muted-foreground">
+            {new Date().toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" })}
+          </p>
+        </div>
       </div>
 
       {/* KPI cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        {kpis.map(({ label, value, icon: Icon, sub }) => (
-          <Card key={label}>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">{label}</CardTitle>
-              <Icon className="size-4 text-muted-foreground" />
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        {kpis.map(({ label, value, icon: Icon, sub, accent }) => (
+          <Card
+            key={label}
+            className="relative overflow-hidden border-border/70 transition-shadow hover:shadow-md"
+          >
+            <CardHeader className="flex flex-row items-start justify-between gap-2 pb-2">
+              <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground leading-snug text-balance">
+                {label}
+              </CardTitle>
+              <span className={cn("flex items-center justify-center size-9 rounded-lg shrink-0", accent)}>
+                <Icon className="size-4" />
+              </span>
             </CardHeader>
             <CardContent>
-              <p className="text-2xl font-bold text-foreground">{value}</p>
+              <p className="text-2xl sm:text-3xl font-bold text-foreground tracking-tight">{value}</p>
               <p className="text-xs text-muted-foreground mt-1">{sub}</p>
             </CardContent>
           </Card>
