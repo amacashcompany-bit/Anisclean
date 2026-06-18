@@ -12,6 +12,7 @@ import {
   customServices,
   realisations,
   type InvoiceItem,
+  type OrderItem,
   type ServiceOverride,
   type RecurringRule,
   type CustomPackage,
@@ -21,6 +22,48 @@ import { auth } from "@/lib/auth"
 import { headers } from "next/headers"
 import { ensureAdminSchema } from "@/lib/db/ensure-schema"
 import { revalidatePath } from "next/cache"
+
+// ── Public: save a customer order (no admin auth required) ───────────────────
+
+export async function saveOrder(data: {
+  reference: string
+  name: string
+  phone: string
+  email?: string
+  address?: string
+  postalCode?: string
+  city?: string
+  notes?: string
+  items: OrderItem[]
+  subtotal: number
+  taxCredit: number
+  total: number
+  lang: string
+  paymentMethod?: string
+}) {
+  await ensureAdminSchema()
+  const [row] = await db
+    .insert(orders)
+    .values({
+      reference: data.reference,
+      name: data.name,
+      phone: data.phone,
+      email: data.email,
+      address: data.address,
+      postalCode: data.postalCode,
+      city: data.city,
+      notes: data.notes,
+      items: data.items,
+      subtotal: data.subtotal,
+      taxCredit: data.taxCredit,
+      total: data.total,
+      lang: data.lang,
+      status: data.paymentMethod ? "confirmed" : "new",
+    })
+    .returning()
+  revalidatePath("/admin/orders")
+  return row
+}
 
 async function requireAdmin() {
   const session = await auth.api.getSession({ headers: await headers() })
