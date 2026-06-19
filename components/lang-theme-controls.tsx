@@ -1,6 +1,7 @@
 "use client"
 
-import { Globe, Moon, Sun } from "lucide-react"
+import { Moon, Sun } from "lucide-react"
+
 import { useTheme } from "next-themes"
 import { useEffect, useState } from "react"
 import { Button, buttonVariants } from "@/components/ui/button"
@@ -31,7 +32,7 @@ export function LangThemeControls() {
             "gap-1.5 px-2",
           )}
         >
-          <Globe className="size-4" />
+          <span className="text-base leading-none">{LANGS.find((l) => l.code === lang)?.flag}</span>
           <span className="text-xs font-semibold uppercase">{lang}</span>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
@@ -39,8 +40,9 @@ export function LangThemeControls() {
             <DropdownMenuItem
               key={l.code}
               onClick={() => setLang(l.code)}
-              className={l.code === lang ? "font-semibold text-primary" : ""}
+              className={cn("gap-2", l.code === lang ? "font-semibold text-primary" : "")}
             >
+              <span className="text-base leading-none">{l.flag}</span>
               {l.label}
             </DropdownMenuItem>
           ))}
