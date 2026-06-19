@@ -3,7 +3,7 @@ export type Lang = "fr" | "en" | "ar"
 export const LANGS: { code: Lang; label: string; flag: string }[] = [
   { code: "fr", label: "Français", flag: "🇫🇷" },
   { code: "en", label: "English", flag: "🇬🇧" },
-  { code: "ar", label: "العربية", flag: "🇩🇿" },
+  { code: "ar", label: "العربية", flag: "🇸🇦" },
 ]
 
 type Dict = Record<string, string>
