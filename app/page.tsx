@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic"
+
 import { SiteHeader } from "@/components/site-header"
 import { HeroSection } from "@/components/hero-section"
 import { ServicesSection } from "@/components/services-section"
