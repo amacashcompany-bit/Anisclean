@@ -31,10 +31,10 @@ export default async function Page() {
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
+      <PhotoSlider />
       <SiteHeader />
       <main className="flex-1">
         <HeroSection />
-        <PhotoSlider />
         <ServicesSection />
         <CreditSimulatorSection />
         <ProcessSection />

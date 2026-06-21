@@ -2,40 +2,61 @@
 
 import { useCallback, useEffect, useRef, useState } from "react"
 import Image from "next/image"
-import { ChevronLeft, ChevronRight } from "lucide-react"
+import Link from "next/link"
+import { ChevronLeft, ChevronRight, Sparkles, ArrowRight } from "lucide-react"
 import { useI18n } from "@/components/providers/i18n-provider"
 
-/* ─── slide data ─────────────────────────────────────────────────── */
-const SLIDES = [
+/* ─── slide data ──────────────────────────────────────────────────── */
+type Slide = {
+  src: string
+  labelKey: string
+  tag: "service" | "france" | "before" | "after" | "promo"
+  cta?: { labelKey: string; href: string }
+}
+
+const SLIDES: Slide[] = [
+  // promotional slide first
+  {
+    src: "/slider/promo-50.png",
+    labelKey: "slider.promoTitle",
+    tag: "promo",
+    cta: { labelKey: "slider.promoCta", href: "/commande" },
+  },
   {
     src: "/slider/clean-2.png",
     labelKey: "slider.slide1",
     tag: "service",
+    cta: { labelKey: "nav.order", href: "/commande" },
   },
   {
     src: "/slider/clean-3.png",
     labelKey: "slider.slide2",
     tag: "service",
+    cta: { labelKey: "nav.order", href: "/commande" },
   },
   {
     src: "/slider/clean-1.png",
     labelKey: "slider.slide3",
     tag: "service",
+    cta: { labelKey: "nav.order", href: "/commande" },
   },
   {
     src: "/slider/clean-4.png",
     labelKey: "slider.slide4",
     tag: "service",
+    cta: { labelKey: "nav.order", href: "/commande" },
   },
   {
     src: "/slider/clean-france-1.png",
     labelKey: "slider.slide5",
     tag: "france",
+    cta: { labelKey: "nav.order", href: "/commande" },
   },
   {
     src: "/slider/clean-france-2.png",
     labelKey: "slider.slide6",
     tag: "france",
+    cta: { labelKey: "nav.order", href: "/commande" },
   },
   {
     src: "/slider/before-kitchen.png",
@@ -46,6 +67,7 @@ const SLIDES = [
     src: "/slider/after-kitchen.png",
     labelKey: "slider.after1",
     tag: "after",
+    cta: { labelKey: "nav.order", href: "/commande" },
   },
   {
     src: "/slider/before-bathroom.png",
@@ -56,49 +78,86 @@ const SLIDES = [
     src: "/slider/after-bathroom.png",
     labelKey: "slider.after2",
     tag: "after",
+    cta: { labelKey: "nav.order", href: "/commande" },
   },
 ]
 
-const AUTO_INTERVAL = 4000
+const AUTO_INTERVAL = 4500
 
-/* ─── helpers ────────────────────────────────────────────────────── */
 function mod(n: number, m: number) {
   return ((n % m) + m) % m
 }
 
-/** Maps an index offset (-2…+2) to its 3-D transform */
-function getTransform(offset: number): React.CSSProperties {
-  const abs = Math.abs(offset)
-  if (abs > 2) return { display: "none" }
-
-  const tx = offset * 260
-  const tz = abs === 0 ? 0 : abs === 1 ? -120 : -260
-  const rotY = offset * -18
-  const scale = abs === 0 ? 1 : abs === 1 ? 0.82 : 0.64
-  const opacity = abs === 0 ? 1 : abs === 1 ? 0.7 : 0.4
-  const zIndex = 10 - abs * 3
-
-  return {
-    transform: `translateX(${tx}px) translateZ(${tz}px) rotateY(${rotY}deg) scale(${scale})`,
-    opacity,
-    zIndex,
-  }
+/* ─── tag config ──────────────────────────────────────────────────── */
+const TAG_STYLE: Record<string, string> = {
+  service: "bg-primary text-primary-foreground",
+  france:  "bg-[#c9273a] text-white",
+  before:  "bg-black/70 text-white",
+  after:   "bg-[oklch(0.7_0.13_232)] text-white",
+  promo:   "bg-amber-400 text-black",
 }
 
+/* ─── promo overlay ───────────────────────────────────────────────── */
+function PromoOverlay({ t }: { t: (k: string) => string }) {
+  return (
+    <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/45 px-6 text-center">
+      {/* logo */}
+      <div className="mb-4 flex items-center gap-2">
+        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[oklch(0.7_0.13_232)] shadow-lg">
+          <span className="text-xl font-black text-white">Z</span>
+        </div>
+        <span className="text-2xl font-black tracking-wider text-white drop-shadow-lg">
+          ZYN<span className="text-[oklch(0.7_0.13_232)]">CLEEN</span>
+        </span>
+      </div>
+      {/* badge */}
+      <div className="mb-3 flex items-center gap-2 rounded-full bg-amber-400/20 px-4 py-1.5 ring-1 ring-amber-400/50">
+        <Sparkles className="h-4 w-4 text-amber-300" />
+        <span className="text-sm font-bold uppercase tracking-widest text-amber-300">
+          {t("slider.promoTag")}
+        </span>
+      </div>
+      {/* big 50% */}
+      <div
+        className="font-black leading-none text-white drop-shadow-2xl"
+        style={{ fontSize: "clamp(5rem,18vw,10rem)", WebkitTextStroke: "2px oklch(0.7 0.13 232)" }}
+      >
+        50%
+      </div>
+      <p className="mt-1 text-lg font-semibold text-white/90 drop-shadow md:text-2xl">
+        {t("slider.promoSub")}
+      </p>
+      <Link
+        href="/commande"
+        className="mt-6 flex items-center gap-2 rounded-full bg-[oklch(0.7_0.13_232)] px-8 py-3 text-sm font-bold text-white shadow-xl transition-all hover:scale-105 hover:bg-[oklch(0.62_0.15_232)] active:scale-95"
+      >
+        {t("slider.promoCta")} <ArrowRight className="h-4 w-4" />
+      </Link>
+    </div>
+  )
+}
+
+/* ─── component ───────────────────────────────────────────────────── */
 export function PhotoSlider() {
   const { t } = useI18n()
   const [active, setActive] = useState(0)
-  const [dragging, setDragging] = useState(false)
-  const [dragStart, setDragStart] = useState(0)
-  const [dragDelta, setDragDelta] = useState(0)
-  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const [prev, setPrev]     = useState<number | null>(null)
+  const [dir, setDir]       = useState<1 | -1>(1)
+  const [animating, setAnimating] = useState(false)
+  const timerRef  = useRef<ReturnType<typeof setInterval> | null>(null)
+  const touchXRef = useRef<number | null>(null)
   const total = SLIDES.length
 
   const go = useCallback(
-    (dir: 1 | -1) => {
-      setActive((p) => mod(p + dir, total))
+    (d: 1 | -1) => {
+      if (animating) return
+      setDir(d)
+      setPrev(active)
+      setActive((p) => mod(p + d, total))
+      setAnimating(true)
+      setTimeout(() => { setPrev(null); setAnimating(false) }, 600)
     },
-    [total],
+    [active, animating, total],
   )
 
   const resetTimer = useCallback(() => {
@@ -108,179 +167,158 @@ export function PhotoSlider() {
 
   useEffect(() => {
     resetTimer()
-    return () => {
-      if (timerRef.current) clearInterval(timerRef.current)
-    }
+    return () => { if (timerRef.current) clearInterval(timerRef.current) }
   }, [resetTimer])
 
-  /* touch / mouse drag */
-  const onDragStart = (x: number) => {
-    setDragging(true)
-    setDragStart(x)
-    setDragDelta(0)
-    if (timerRef.current) clearInterval(timerRef.current)
-  }
-  const onDragMove = (x: number) => {
-    if (!dragging) return
-    setDragDelta(x - dragStart)
-  }
-  const onDragEnd = () => {
-    if (!dragging) return
-    setDragging(false)
-    if (dragDelta < -50) go(1)
-    else if (dragDelta > 50) go(-1)
-    setDragDelta(0)
-    resetTimer()
+  /* touch swipe */
+  const onTouchStart = (e: React.TouchEvent) => { touchXRef.current = e.touches[0].clientX }
+  const onTouchEnd   = (e: React.TouchEvent) => {
+    if (touchXRef.current === null) return
+    const delta = e.changedTouches[0].clientX - touchXRef.current
+    touchXRef.current = null
+    if (delta < -40) { go(1); resetTimer() }
+    else if (delta > 40) { go(-1); resetTimer() }
   }
 
-  const tagColor: Record<string, string> = {
-    service: "bg-primary text-primary-foreground",
-    france: "bg-[oklch(0.55_0.18_25)] text-white",
-    before: "bg-muted-foreground text-white",
-    after: "bg-accent text-white",
-  }
   const tagLabel: Record<string, string> = {
     service: t("slider.tagService"),
-    france: "🇫🇷 France",
-    before: t("slider.tagBefore"),
-    after: t("slider.tagAfter"),
+    france:  "🇫🇷 France",
+    before:  t("slider.tagBefore"),
+    after:   t("slider.tagAfter"),
+    promo:   t("slider.promoTag"),
   }
 
   return (
-    <section className="relative w-full overflow-hidden bg-gradient-to-b from-muted/60 to-background py-16 md:py-24">
-      {/* heading */}
-      <div className="mx-auto mb-10 max-w-2xl px-4 text-center">
-        <span className="mb-3 inline-block rounded-full bg-accent/15 px-4 py-1 text-xs font-semibold uppercase tracking-widest text-accent">
-          {t("slider.badge")}
-        </span>
-        <h2 className="font-heading text-3xl font-extrabold text-primary md:text-4xl">
-          {t("slider.title")}
-        </h2>
-        <p className="mt-3 text-sm leading-relaxed text-muted-foreground md:text-base">
-          {t("slider.desc")}
-        </p>
-      </div>
+    <section
+      className="relative w-full overflow-hidden bg-black"
+      style={{ height: "clamp(320px, 56vw, 680px)" }}
+      onTouchStart={onTouchStart}
+      onTouchEnd={onTouchEnd}
+    >
+      {/* ── slides ─────────────────────────────────────────────────── */}
+      {SLIDES.map((slide, i) => {
+        const isActive = i === active
+        const isPrev   = i === prev
 
-      {/* 3-D stage */}
-      <div
-        className="relative mx-auto h-[340px] md:h-[420px]"
-        style={{ perspective: "1100px", perspectiveOrigin: "50% 50%" }}
-        onMouseDown={(e) => onDragStart(e.clientX)}
-        onMouseMove={(e) => onDragMove(e.clientX)}
-        onMouseUp={onDragEnd}
-        onMouseLeave={onDragEnd}
-        onTouchStart={(e) => onDragStart(e.touches[0].clientX)}
-        onTouchMove={(e) => onDragMove(e.touches[0].clientX)}
-        onTouchEnd={onDragEnd}
-      >
-        <div
-          className="absolute inset-0 flex items-center justify-center"
-          style={{ transformStyle: "preserve-3d" }}
-        >
-          {SLIDES.map((slide, i) => {
-            const rawOffset = mod(i - active + Math.round(total / 2), total) - Math.round(total / 2)
-            // small drag nudge on the active card
-            const extraTx = rawOffset === 0 ? dragDelta * 0.4 : 0
-            const style = getTransform(rawOffset)
-            const hidden = style.display === "none"
-            if (hidden) return null
+        // position classes based on direction + state
+        let translateClass = "translate-x-full"    // off-right by default
+        if (isActive) translateClass = "translate-x-0"
+        else if (isPrev) translateClass = dir === 1 ? "-translate-x-full" : "translate-x-full"
 
-            return (
-              <div
-                key={slide.src}
-                className="absolute cursor-pointer select-none"
-                style={{
-                  ...style,
-                  width: "clamp(220px, 38vw, 480px)",
-                  transition: dragging && rawOffset === 0
-                    ? "none"
-                    : "transform 0.55s cubic-bezier(0.34,1.2,0.64,1), opacity 0.45s ease",
-                  transform:
-                    dragging && rawOffset === 0
-                      ? `translateX(calc(${(style.transform as string).match(/translateX\(([^)]+)\)/)?.[1] ?? "0px"} + ${extraTx}px)) translateZ(0px) rotateY(0deg) scale(1)`
-                      : (style.transform as string),
-                }}
-                onClick={() => {
-                  if (rawOffset !== 0) setActive(i)
-                }}
-              >
-                {/* card */}
-                <div className="relative overflow-hidden rounded-2xl shadow-2xl ring-1 ring-border/30"
-                  style={{ aspectRatio: "4/3" }}>
-                  <Image
-                    src={slide.src}
-                    alt={t(slide.labelKey)}
-                    fill
-                    className="object-cover"
-                    sizes="(max-width:768px) 80vw, 480px"
-                    draggable={false}
-                  />
-                  {/* gradient overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
-
-                  {/* Zyncleen logo watermark */}
-                  <div className="absolute right-3 top-3 rounded-lg bg-black/40 px-2 py-1 backdrop-blur-sm">
-                    <span className="text-xs font-black tracking-wider text-white">
-                      ZYN<span className="text-[oklch(0.7_0.13_232)]">CLEEN</span>
-                    </span>
-                  </div>
-
-                  {/* tag */}
-                  {rawOffset === 0 && (
-                    <div className={`absolute left-3 top-3 rounded-full px-3 py-1 text-[11px] font-semibold ${tagColor[slide.tag]}`}>
-                      {tagLabel[slide.tag]}
-                    </div>
-                  )}
-
-                  {/* label */}
-                  {rawOffset === 0 && (
-                    <div className="absolute bottom-0 left-0 right-0 p-4">
-                      <p className="text-sm font-semibold leading-snug text-white drop-shadow-md">
-                        {t(slide.labelKey)}
-                      </p>
-                    </div>
-                  )}
-                </div>
-              </div>
-            )
-          })}
-        </div>
-      </div>
-
-      {/* arrows */}
-      <div className="mt-8 flex items-center justify-center gap-6">
-        <button
-          aria-label="Previous"
-          onClick={() => { go(-1); resetTimer() }}
-          className="flex h-11 w-11 items-center justify-center rounded-full border border-border bg-background shadow-md transition hover:bg-primary hover:text-primary-foreground"
-        >
-          <ChevronLeft className="h-5 w-5" />
-        </button>
-
-        {/* dots */}
-        <div className="flex gap-2">
-          {SLIDES.map((_, i) => (
-            <button
-              key={i}
-              aria-label={`Go to slide ${i + 1}`}
-              onClick={() => { setActive(i); resetTimer() }}
-              className="h-2 rounded-full transition-all"
-              style={{
-                width: i === active ? 24 : 8,
-                background: i === active ? "oklch(0.7 0.13 232)" : "oklch(0.85 0.02 235)",
-              }}
+        return (
+          <div
+            key={slide.src}
+            aria-hidden={!isActive}
+            className={`absolute inset-0 transition-transform duration-[600ms] ease-[cubic-bezier(0.25,0.46,0.45,0.94)] ${translateClass}`}
+          >
+            {/* image */}
+            <Image
+              src={slide.src}
+              alt={t(slide.labelKey)}
+              fill
+              priority={i === 0}
+              className={`object-cover transition-transform duration-[8000ms] ease-linear ${
+                isActive ? "scale-110" : "scale-100"
+              }`}
+              sizes="100vw"
+              draggable={false}
             />
-          ))}
-        </div>
 
-        <button
-          aria-label="Next"
-          onClick={() => { go(1); resetTimer() }}
-          className="flex h-11 w-11 items-center justify-center rounded-full border border-border bg-background shadow-md transition hover:bg-primary hover:text-primary-foreground"
-        >
-          <ChevronRight className="h-5 w-5" />
-        </button>
+            {/* overlay gradient */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-black/10" />
+
+            {/* promo slide gets its own overlay */}
+            {slide.tag === "promo" && isActive && <PromoOverlay t={t} />}
+
+            {/* regular slide content */}
+            {slide.tag !== "promo" && isActive && (
+              <div className="absolute bottom-0 left-0 right-0 p-6 md:p-10">
+                <span className={`mb-3 inline-block rounded-full px-3 py-1 text-xs font-bold ${TAG_STYLE[slide.tag]}`}>
+                  {tagLabel[slide.tag]}
+                </span>
+                <h2
+                  className="font-heading font-extrabold leading-tight text-white drop-shadow-xl"
+                  style={{ fontSize: "clamp(1.25rem,3.5vw,2.5rem)" }}
+                >
+                  {t(slide.labelKey)}
+                </h2>
+                {/* Zyncleen logo inline */}
+                <p className="mt-1 text-xs font-semibold tracking-widest text-white/60">
+                  ZYN<span className="text-[oklch(0.7_0.13_232)]">CLEEN</span>
+                </p>
+                {slide.cta && (
+                  <Link
+                    href={slide.cta.href}
+                    className="mt-4 inline-flex items-center gap-2 rounded-full bg-[oklch(0.7_0.13_232)] px-6 py-2.5 text-sm font-bold text-white shadow-lg transition-all hover:scale-105 hover:bg-[oklch(0.62_0.15_232)] active:scale-95"
+                  >
+                    {t(slide.cta.labelKey)} <ArrowRight className="h-4 w-4" />
+                  </Link>
+                )}
+              </div>
+            )}
+          </div>
+        )
+      })}
+
+      {/* ── Zyncleen watermark top-left ─────────────────────────────── */}
+      <div className="pointer-events-none absolute left-4 top-4 z-20 flex items-center gap-2">
+        <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-black/40 backdrop-blur-sm">
+          <span className="text-sm font-black text-white">Z</span>
+        </div>
+        <span className="text-sm font-black tracking-wider text-white/90 drop-shadow">
+          ZYN<span className="text-[oklch(0.85_0.14_232)]">CLEEN</span>
+        </span>
       </div>
+
+      {/* ── arrows ──────────────────────────────────────────────────── */}
+      <button
+        aria-label="Previous slide"
+        onClick={() => { go(-1); resetTimer() }}
+        className="absolute left-3 top-1/2 z-20 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-full bg-black/40 text-white backdrop-blur-sm transition hover:bg-black/70 md:left-5 md:h-12 md:w-12"
+      >
+        <ChevronLeft className="h-5 w-5" />
+      </button>
+      <button
+        aria-label="Next slide"
+        onClick={() => { go(1); resetTimer() }}
+        className="absolute right-3 top-1/2 z-20 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-full bg-black/40 text-white backdrop-blur-sm transition hover:bg-black/70 md:right-5 md:h-12 md:w-12"
+      >
+        <ChevronRight className="h-5 w-5" />
+      </button>
+
+      {/* ── dot indicators ──────────────────────────────────────────── */}
+      <div className="absolute bottom-4 left-1/2 z-20 flex -translate-x-1/2 items-center gap-2">
+        {SLIDES.map((_, i) => (
+          <button
+            key={i}
+            aria-label={`Go to slide ${i + 1}`}
+            onClick={() => { setActive(i); resetTimer() }}
+            className="h-1.5 rounded-full transition-all duration-300"
+            style={{
+              width:      i === active ? 28 : 6,
+              background: i === active ? "oklch(0.7 0.13 232)" : "rgba(255,255,255,0.45)",
+            }}
+          />
+        ))}
+      </div>
+
+      {/* ── progress bar ─────────────────────────────────────────────── */}
+      <div className="absolute bottom-0 left-0 right-0 z-20 h-0.5 bg-white/10">
+        <div
+          key={active}
+          className="h-full bg-[oklch(0.7_0.13_232)]"
+          style={{
+            animation: `slideProgress ${AUTO_INTERVAL}ms linear forwards`,
+          }}
+        />
+      </div>
+
+      <style jsx>{`
+        @keyframes slideProgress {
+          from { width: 0% }
+          to   { width: 100% }
+        }
+      `}</style>
     </section>
   )
 }
