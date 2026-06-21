@@ -32,14 +32,12 @@ export function HeroSection({ dbSlides = null }: { dbSlides?: DbSlide[] | null }
           <p className="max-w-xl text-pretty text-lg leading-relaxed text-muted-foreground">{t("hero.desc")}</p>
 
           <div className="flex flex-col gap-3 sm:flex-row">
-            <Button asChild size="lg">
-              <Link href="/commande">{t("hero.cta")}</Link>
+            <Button render={<Link href="/commande" />} size="lg">
+              {t("hero.cta")}
             </Button>
-            <Button asChild size="lg" variant="outline" className="gap-2 bg-transparent">
-              <a href={site.phoneHref}>
-                <Phone className="h-4 w-4" />
-                {site.phoneDisplay}
-              </a>
+            <Button render={<a href={site.phoneHref} />} size="lg" variant="outline" className="flex items-center gap-2 bg-transparent">
+              <Phone className="h-4 w-4 shrink-0" />
+              {site.phoneDisplay}
             </Button>
           </div>
 
