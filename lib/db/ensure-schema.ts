@@ -109,6 +109,26 @@ export async function ensureAdminSchema() {
         "sortOrder"   int  NOT NULL DEFAULT 0,
         "createdAt"   timestamptz NOT NULL DEFAULT now()
       );
+
+      CREATE TABLE IF NOT EXISTS user_wallets (
+        id              serial PRIMARY KEY,
+        "userId"        text NOT NULL UNIQUE,
+        balance         real NOT NULL DEFAULT 0,
+        "loyaltyPoints" integer NOT NULL DEFAULT 0,
+        "createdAt"     timestamptz NOT NULL DEFAULT now(),
+        "updatedAt"     timestamptz NOT NULL DEFAULT now()
+      );
+
+      CREATE TABLE IF NOT EXISTS wallet_transactions (
+        id              serial PRIMARY KEY,
+        "userId"        text NOT NULL,
+        type            text NOT NULL,
+        amount          real NOT NULL,
+        "pointsAmount"  integer,
+        description     text,
+        "refId"         text,
+        "createdAt"     timestamptz NOT NULL DEFAULT now()
+      );
     `)
   } finally {
     client.release()
