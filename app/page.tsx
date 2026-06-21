@@ -10,7 +10,7 @@ import { TestimonialsSection } from "@/components/testimonials-section"
 import { FaqSection } from "@/components/faq-section"
 import { SiteFooter } from "@/components/site-footer"
 import { FloatingContact } from "@/components/floating-contact"
-import { getApprovedReviews, getCustomServicesPublic } from "@/lib/db/admin-actions"
+import { getApprovedReviews } from "@/lib/db/admin-actions"
 import { ensureAdminSchema } from "@/lib/db/ensure-schema"
 
 export default async function Page() {
@@ -28,19 +28,12 @@ export default async function Page() {
     // DB might not be ready yet; silently fall back to empty list
   }
 
-  let customSvcs: Awaited<ReturnType<typeof getCustomServicesPublic>> = []
-  try {
-    customSvcs = await getCustomServicesPublic()
-  } catch {
-    // DB might not be ready yet; silently fall back to empty list
-  }
-
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <SiteHeader />
       <main className="flex-1">
         <HeroSection />
-        <ServicesSection customServices={customSvcs} />
+        <ServicesSection />
         <CreditSimulatorSection />
         <ProcessSection />
         <AreaSection />

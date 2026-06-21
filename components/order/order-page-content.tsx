@@ -5,8 +5,22 @@ import { services } from "@/lib/services"
 import { useI18n } from "@/components/providers/i18n-provider"
 import { CartProvider, useCart } from "@/components/order/cart-context"
 import { ServiceBuilderCard } from "@/components/order/service-builder-card"
+import { CustomServiceBuilderCard } from "@/components/order/custom-service-builder-card"
 import { CartSummary } from "@/components/order/cart-summary"
 import { OrderForm } from "@/components/order/order-form"
+
+interface CustomService {
+  id: string
+  name: string
+  description?: string | null
+  icon: string
+  imageUrl?: string | null
+  hourlyRate?: number | null
+  packages?: { id: string; label: string; price: number }[] | null
+  packagesTitle?: string | null
+  fromLabel?: string | null
+  taxEligible: boolean
+}
 
 function MobileBar({ onContinue }: { onContinue: () => void }) {
   const { t } = useI18n()
@@ -29,7 +43,7 @@ function MobileBar({ onContinue }: { onContinue: () => void }) {
   )
 }
 
-function Inner() {
+function Inner({ customServices }: { customServices: CustomService[] }) {
   const { t } = useI18n()
   const formRef = useRef<HTMLDivElement>(null)
   const scrollToForm = () => formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" })
@@ -46,8 +60,14 @@ function Inner() {
 
         <div className="mt-10 grid gap-8 lg:grid-cols-[1fr_360px]">
           <div className="flex flex-col gap-5">
+            {/* Built-in services */}
             {services.map((service) => (
               <ServiceBuilderCard key={service.id} service={service} />
+            ))}
+
+            {/* Custom services from DB */}
+            {customServices.map((svc) => (
+              <CustomServiceBuilderCard key={svc.id} service={svc} />
             ))}
           </div>
 
@@ -66,10 +86,10 @@ function Inner() {
   )
 }
 
-export function OrderPageContent() {
+export function OrderPageContent({ customServices = [] }: { customServices?: CustomService[] }) {
   return (
     <CartProvider>
-      <Inner />
+      <Inner customServices={customServices} />
     </CartProvider>
   )
 }
