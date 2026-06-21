@@ -56,15 +56,24 @@ const homeIcon = L.divIcon({
 })
 
 // Fly-to helper when selected changes
-function FlyTo({ coords }: { coords: [number, number] | null }) {
+function FlyTo({ coords, center }: { coords: [number, number] | null; center: [number, number] }) {
   const map = useMap()
   useEffect(() => {
-    if (coords) {
-      map.flyTo(coords, 13, { duration: 1.2, easeLinearity: 0.25 })
-    } else {
-      map.flyTo([47.322047, 5.04148], 10, { duration: 1.0 })
+    // Guard: map must be fully initialised before calling flyTo
+    if (!map || !map.getContainer()) return
+    try {
+      const target = coords ?? center
+      // Validate coords are real numbers before flying
+      if (!Number.isFinite(target[0]) || !Number.isFinite(target[1])) return
+      if (coords) {
+        map.flyTo(target, 13, { duration: 1.2, easeLinearity: 0.25 })
+      } else {
+        map.flyTo(target, 10, { duration: 1.0 })
+      }
+    } catch {
+      // Swallow any residual Leaflet init errors
     }
-  }, [coords, map])
+  }, [coords, map, center])
   return null
 }
 
@@ -138,7 +147,7 @@ export default function AreaMap({ center, radiusKm, communes, selected, onSelect
       ))}
 
       {/* Fly animation */}
-      <FlyTo coords={selected ? selected.coords : null} />
+      <FlyTo coords={selected ? selected.coords : null} center={center} />
     </MapContainer>
   )
 }
