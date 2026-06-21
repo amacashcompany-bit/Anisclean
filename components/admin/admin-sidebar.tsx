@@ -15,6 +15,8 @@ import {
   Star,
   LogOut,
   Images,
+  MapPin,
+  SlidersHorizontal,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useI18n } from "@/components/providers/i18n-provider"
@@ -30,6 +32,8 @@ const navItems = [
   { key: "admin.nav.services", href: "/admin/services", icon: Wrench },
   { key: "admin.nav.realisations", href: "/admin/realisations", icon: Images },
   { key: "admin.nav.reviews", href: "/admin/reviews", icon: Star },
+  { key: "admin.nav.locations", href: "/admin/locations", icon: MapPin },
+  { key: "admin.nav.slider", href: "/admin/slider", icon: SlidersHorizontal },
   { key: "admin.nav.users", href: "/admin/users", icon: Users },
   { key: "admin.nav.settings", href: "/admin/settings", icon: Settings },
 ]

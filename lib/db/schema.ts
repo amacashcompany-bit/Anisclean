@@ -197,6 +197,36 @@ export const realisations = pgTable("realisations", {
   createdAt: timestamp("createdAt").notNull().defaultNow(),
 })
 
+// --- Service Locations (admin-managed map communes) --------------------------
+
+export const serviceLocations = pgTable("service_locations", {
+  id:        serial("id").primaryKey(),
+  name:      text("name").notNull(),
+  lat:       real("lat").notNull(),
+  lng:       real("lng").notNull(),
+  active:    boolean("active").notNull().default(true),
+  sortOrder: integer("sortOrder").notNull().default(0),
+  createdAt: timestamp("createdAt").notNull().defaultNow(),
+})
+
+// --- Slider Slides (admin-managed hero slider) --------------------------------
+
+export const sliderSlides = pgTable("slider_slides", {
+  id:         serial("id").primaryKey(),
+  imageUrl:   text("imageUrl").notNull(),
+  labelFr:    text("labelFr").notNull().default(""),
+  labelEn:    text("labelEn").notNull().default(""),
+  labelAr:    text("labelAr").notNull().default(""),
+  tag:        text("tag").notNull().default("service"),
+  ctaLabelFr: text("ctaLabelFr"),
+  ctaLabelEn: text("ctaLabelEn"),
+  ctaLabelAr: text("ctaLabelAr"),
+  ctaHref:    text("ctaHref"),
+  active:     boolean("active").notNull().default(true),
+  sortOrder:  integer("sortOrder").notNull().default(0),
+  createdAt:  timestamp("createdAt").notNull().defaultNow(),
+})
+
 export const reviews = pgTable("reviews", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),

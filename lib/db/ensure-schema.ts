@@ -83,6 +83,32 @@ export async function ensureAdminSchema() {
       );
 
       ALTER TABLE custom_services ADD COLUMN IF NOT EXISTS "imageUrl" text;
+
+      CREATE TABLE IF NOT EXISTS service_locations (
+        id          serial PRIMARY KEY,
+        name        text NOT NULL,
+        lat         real NOT NULL,
+        lng         real NOT NULL,
+        active      boolean NOT NULL DEFAULT true,
+        "sortOrder" int  NOT NULL DEFAULT 0,
+        "createdAt" timestamptz NOT NULL DEFAULT now()
+      );
+
+      CREATE TABLE IF NOT EXISTS slider_slides (
+        id            serial PRIMARY KEY,
+        "imageUrl"    text NOT NULL,
+        "labelFr"     text NOT NULL DEFAULT '',
+        "labelEn"     text NOT NULL DEFAULT '',
+        "labelAr"     text NOT NULL DEFAULT '',
+        tag           text NOT NULL DEFAULT 'service',
+        "ctaLabelFr"  text,
+        "ctaLabelEn"  text,
+        "ctaLabelAr"  text,
+        "ctaHref"     text,
+        active        boolean NOT NULL DEFAULT true,
+        "sortOrder"   int  NOT NULL DEFAULT 0,
+        "createdAt"   timestamptz NOT NULL DEFAULT now()
+      );
     `)
   } finally {
     client.release()

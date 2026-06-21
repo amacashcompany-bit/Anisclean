@@ -7,7 +7,13 @@ import { site } from "@/lib/site"
 import { useI18n } from "@/components/providers/i18n-provider"
 import { PhotoSlider } from "@/components/photo-slider"
 
-export function HeroSection() {
+type DbSlide = {
+  id: number; imageUrl: string; labelFr: string; labelEn: string; labelAr: string
+  tag: string; ctaLabelFr: string | null; ctaLabelEn: string | null
+  ctaLabelAr: string | null; ctaHref: string | null
+}
+
+export function HeroSection({ dbSlides = null }: { dbSlides?: DbSlide[] | null }) {
   const { t } = useI18n()
 
   return (
@@ -26,12 +32,14 @@ export function HeroSection() {
           <p className="max-w-xl text-pretty text-lg leading-relaxed text-muted-foreground">{t("hero.desc")}</p>
 
           <div className="flex flex-col gap-3 sm:flex-row">
-            <Button render={<Link href="/commande" />} size="lg">
-              {t("hero.cta")}
+            <Button asChild size="lg">
+              <Link href="/commande">{t("hero.cta")}</Link>
             </Button>
-            <Button render={<a href={site.phoneHref} />} size="lg" variant="outline" className="gap-2 bg-transparent">
-              <Phone className="h-4 w-4" />
-              {site.phoneDisplay}
+            <Button asChild size="lg" variant="outline" className="gap-2 bg-transparent">
+              <a href={site.phoneHref}>
+                <Phone className="h-4 w-4" />
+                {site.phoneDisplay}
+              </a>
             </Button>
           </div>
 
@@ -52,7 +60,7 @@ export function HeroSection() {
         </div>
 
         <div className="relative overflow-hidden rounded-2xl border border-border shadow-xl">
-          <PhotoSlider compact />
+          <PhotoSlider compact dbSlides={dbSlides} />
         </div>
       </div>
     </section>

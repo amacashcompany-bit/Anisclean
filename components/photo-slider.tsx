@@ -11,7 +11,11 @@ type Slide = {
   src: string
   labelKey: string
   tag: "service" | "france" | "before" | "after" | "promo"
-  cta?: { labelKey: string; href: string }
+  cta?: { labelKey: string; href: string; labelFr?: string; labelEn?: string; labelAr?: string }
+  // DB locale overrides
+  labelFr?: string
+  labelEn?: string
+  labelAr?: string
 }
 
 const SLIDES: Slide[] = [
@@ -137,16 +141,51 @@ function PromoOverlay({ t }: { t: (k: string) => string }) {
   )
 }
 
+type DbSlide = {
+  id: number
+  imageUrl: string
+  labelFr: string
+  labelEn: string
+  labelAr: string
+  tag: string
+  ctaLabelFr: string | null
+  ctaLabelEn: string | null
+  ctaLabelAr: string | null
+  ctaHref: string | null
+}
+
 /* ─── component ───────────────────────────────────────────────────── */
-export function PhotoSlider({ compact = false }: { compact?: boolean }) {
-  const { t } = useI18n()
+export function PhotoSlider({ compact = false, dbSlides = null }: { compact?: boolean; dbSlides?: DbSlide[] | null }) {
+  const { t, lang } = useI18n()
+
+  // Build slide list: prefer DB slides, fall back to hardcoded SLIDES
+  const slides: Slide[] = dbSlides
+    ? dbSlides.map((s) => ({
+        src: s.imageUrl,
+        labelKey: "__db__",
+        tag: s.tag as Slide["tag"],
+        cta: s.ctaHref
+          ? {
+              labelKey: "__db_cta__",
+              href: s.ctaHref,
+              labelFr: s.ctaLabelFr ?? undefined,
+              labelEn: s.ctaLabelEn ?? undefined,
+              labelAr: s.ctaLabelAr ?? undefined,
+            }
+          : undefined,
+        labelFr: s.labelFr,
+        labelEn: s.labelEn,
+        labelAr: s.labelAr,
+      }))
+    : SLIDES
+
   const [active, setActive] = useState(0)
   const [prev, setPrev]     = useState<number | null>(null)
   const [dir, setDir]       = useState<1 | -1>(1)
   const [animating, setAnimating] = useState(false)
   const timerRef  = useRef<ReturnType<typeof setInterval> | null>(null)
   const touchXRef = useRef<number | null>(null)
-  const total = SLIDES.length
+  const total = slides.length
 
   const go = useCallback(
     (d: 1 | -1) => {
@@ -196,7 +235,16 @@ export function PhotoSlider({ compact = false }: { compact?: boolean }) {
       onTouchEnd={onTouchEnd}
     >
       {/* ── slides ─────────────────────────────────────────────────── */}
-      {SLIDES.map((slide, i) => {
+      {slides.map((slide, i) => {
+        // Resolve locale label for DB slides
+        const slideLabel = slide.labelKey === "__db__"
+          ? (lang === "ar" ? slide.labelAr : lang === "en" ? slide.labelEn : slide.labelFr) ?? ""
+          : t(slide.labelKey)
+        const ctaLabel = slide.cta
+          ? slide.cta.labelKey === "__db_cta__"
+            ? (lang === "ar" ? slide.cta.labelAr : lang === "en" ? slide.cta.labelEn : slide.cta.labelFr) ?? ""
+            : t(slide.cta.labelKey)
+          : ""
         const isActive = i === active
         const isPrev   = i === prev
 
@@ -214,7 +262,7 @@ export function PhotoSlider({ compact = false }: { compact?: boolean }) {
             {/* image */}
             <Image
               src={slide.src}
-              alt={t(slide.labelKey)}
+              alt={slideLabel}
               fill
               priority={i === 0}
               className={`object-cover transition-transform duration-[8000ms] ease-linear ${
@@ -240,7 +288,7 @@ export function PhotoSlider({ compact = false }: { compact?: boolean }) {
                   className="font-heading font-extrabold leading-tight text-white drop-shadow-xl"
                   style={{ fontSize: "clamp(1.25rem,3.5vw,2.5rem)" }}
                 >
-                  {t(slide.labelKey)}
+                  {slideLabel}
                 </h2>
                 {/* Zyncleen logo inline */}
                 <p className="mt-1 text-xs font-semibold tracking-widest text-white/60">
@@ -251,7 +299,7 @@ export function PhotoSlider({ compact = false }: { compact?: boolean }) {
                     href={slide.cta.href}
                     className="mt-4 inline-flex items-center gap-2 rounded-full bg-[oklch(0.7_0.13_232)] px-6 py-2.5 text-sm font-bold text-white shadow-lg transition-all hover:scale-105 hover:bg-[oklch(0.62_0.15_232)] active:scale-95"
                   >
-                    {t(slide.cta.labelKey)} <ArrowRight className="h-4 w-4" />
+                    {ctaLabel} <ArrowRight className="h-4 w-4" />
                   </Link>
                 )}
               </div>
@@ -288,7 +336,7 @@ export function PhotoSlider({ compact = false }: { compact?: boolean }) {
 
       {/* ── dot indicators ──────────────────────────────────────────── */}
       <div className="absolute bottom-6 left-1/2 z-20 flex -translate-x-1/2 items-center gap-2">
-        {SLIDES.map((_, i) => (
+        {slides.map((_, i) => (
           <button
             key={i}
             aria-label={`Go to slide ${i + 1}`}

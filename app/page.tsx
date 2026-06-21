@@ -10,7 +10,7 @@ import { TestimonialsSection } from "@/components/testimonials-section"
 import { FaqSection } from "@/components/faq-section"
 import { SiteFooter } from "@/components/site-footer"
 import { FloatingContact } from "@/components/floating-contact"
-import { getApprovedReviews } from "@/lib/db/admin-actions"
+import { getApprovedReviews, getSliderSlidesPublic } from "@/lib/db/admin-actions"
 import { ensureAdminSchema } from "@/lib/db/ensure-schema"
 
 export default async function Page() {
@@ -22,17 +22,18 @@ export default async function Page() {
   }
 
   let reviews: Awaited<ReturnType<typeof getApprovedReviews>> = []
+  let dbSlides: Awaited<ReturnType<typeof getSliderSlidesPublic>> = []
   try {
-    reviews = await getApprovedReviews()
+    ;[reviews, dbSlides] = await Promise.all([getApprovedReviews(), getSliderSlidesPublic()])
   } catch {
-    // DB might not be ready yet; silently fall back to empty list
+    // DB might not be ready yet; silently fall back to empty lists
   }
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <SiteHeader />
       <main className="flex-1">
-        <HeroSection />
+        <HeroSection dbSlides={dbSlides.length > 0 ? dbSlides : null} />
         <ServicesSection />
         <CreditSimulatorSection />
         <ProcessSection />

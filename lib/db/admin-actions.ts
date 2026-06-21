@@ -11,6 +11,8 @@ import {
   user,
   customServices,
   realisations,
+  serviceLocations,
+  sliderSlides,
   type InvoiceItem,
   type OrderItem,
   type ServiceOverride,
@@ -501,5 +503,102 @@ export async function deleteReview(id: number) {
   await requireAdmin()
   await db.delete(reviews).where(eq(reviews.id, id))
   revalidatePath("/admin/reviews")
+  revalidatePath("/")
+}
+
+// ── Service Locations ──────────────────────────────────────────────────────────
+
+export async function getServiceLocations() {
+  await requireAdmin()
+  return db.select().from(serviceLocations).orderBy(serviceLocations.sortOrder)
+}
+
+export async function getServiceLocationsPublic() {
+  return db.select().from(serviceLocations).where(eq(serviceLocations.active, true)).orderBy(serviceLocations.sortOrder)
+}
+
+export async function createServiceLocation(data: { name: string; lat: number; lng: number; sortOrder?: number }) {
+  await requireAdmin()
+  const [row] = await db.insert(serviceLocations).values({ ...data, sortOrder: data.sortOrder ?? 0 }).returning()
+  revalidatePath("/admin/locations")
+  revalidatePath("/")
+  return row
+}
+
+export async function updateServiceLocation(id: number, data: Partial<{ name: string; lat: number; lng: number; active: boolean; sortOrder: number }>) {
+  await requireAdmin()
+  await db.update(serviceLocations).set(data).where(eq(serviceLocations.id, id))
+  revalidatePath("/admin/locations")
+  revalidatePath("/")
+}
+
+export async function deleteServiceLocation(id: number) {
+  await requireAdmin()
+  await db.delete(serviceLocations).where(eq(serviceLocations.id, id))
+  revalidatePath("/admin/locations")
+  revalidatePath("/")
+}
+
+// ── Slider Slides ─────────────────────────────────────────────────────────────
+
+export async function getSliderSlides() {
+  await requireAdmin()
+  return db.select().from(sliderSlides).orderBy(sliderSlides.sortOrder)
+}
+
+export async function getSliderSlidesPublic() {
+  return db.select().from(sliderSlides).where(eq(sliderSlides.active, true)).orderBy(sliderSlides.sortOrder)
+}
+
+export async function createSliderSlide(data: {
+  imageUrl: string
+  labelFr: string
+  labelEn: string
+  labelAr: string
+  tag: string
+  ctaLabelFr?: string
+  ctaLabelEn?: string
+  ctaLabelAr?: string
+  ctaHref?: string
+  active?: boolean
+  sortOrder?: number
+}) {
+  await requireAdmin()
+  const [row] = await db.insert(sliderSlides).values({ ...data, sortOrder: data.sortOrder ?? 0 }).returning()
+  revalidatePath("/admin/slider")
+  revalidatePath("/")
+  return row
+}
+
+export async function updateSliderSlide(id: number, data: Partial<{
+  imageUrl: string
+  labelFr: string
+  labelEn: string
+  labelAr: string
+  tag: string
+  ctaLabelFr: string
+  ctaLabelEn: string
+  ctaLabelAr: string
+  ctaHref: string
+  active: boolean
+  sortOrder: number
+}>) {
+  await requireAdmin()
+  await db.update(sliderSlides).set(data).where(eq(sliderSlides.id, id))
+  revalidatePath("/admin/slider")
+  revalidatePath("/")
+}
+
+export async function deleteSliderSlide(id: number) {
+  await requireAdmin()
+  await db.delete(sliderSlides).where(eq(sliderSlides.id, id))
+  revalidatePath("/admin/slider")
+  revalidatePath("/")
+}
+
+export async function reorderSliderSlides(ids: number[]) {
+  await requireAdmin()
+  await Promise.all(ids.map((id, i) => db.update(sliderSlides).set({ sortOrder: i }).where(eq(sliderSlides.id, id))))
+  revalidatePath("/admin/slider")
   revalidatePath("/")
 }
