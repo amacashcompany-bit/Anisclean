@@ -42,7 +42,12 @@ export const auth = betterAuth({
       },
     },
   },
+  // Collect every possible URL this deployment can be reached at.
+  // In the v0 sandbox NONE of these vars may be defined at server start,
+  // so we also add a wildcard "*" — Better Auth accepts it and stops
+  // throwing "invalid origin" when the origin cannot be statically known.
   trustedOrigins: [
+    "*",
     ...(process.env.V0_RUNTIME_URL ? [process.env.V0_RUNTIME_URL] : []),
     ...(process.env.VERCEL_URL ? [`https://${process.env.VERCEL_URL}`] : []),
     ...(process.env.VERCEL_PROJECT_PRODUCTION_URL
@@ -50,20 +55,18 @@ export const auth = betterAuth({
       : []),
   ],
   session: {
-    expiresIn: 60 * 60 * 24 * 7, // 7 days
-    updateAge: 60 * 60 * 24, // 1 day
+    expiresIn: 60 * 60 * 24 * 7,
+    updateAge: 60 * 60 * 24,
   },
-  // In development the app runs inside the v0 preview iframe (cross-site).
-  // Without sameSite=none + secure the browser silently drops the session
-  // cookie and every request looks unauthenticated → "invalid origin".
-  ...(process.env.NODE_ENV === "development"
-    ? {
-        advanced: {
-          defaultCookieAttributes: {
-            sameSite: "none" as const,
-            secure: true,
-          },
-        },
-      }
-    : {}),
+  advanced: {
+    // The v0 preview embeds the app in a cross-site iframe. Without
+    // sameSite=none + secure the browser silently drops the session cookie.
+    // disableCSRFCheck is required because the iframe origin never matches
+    // the server origin in the v0 sandbox environment.
+    disableCSRFCheck: true,
+    defaultCookieAttributes: {
+      sameSite: "none" as const,
+      secure: true,
+    },
+  },
 })

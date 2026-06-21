@@ -2,13 +2,10 @@
 
 import { createAuthClient } from "better-auth/react"
 
-// When running inside the v0 preview iframe the page origin differs from the
-// server origin. Explicitly setting baseURL ensures auth requests always hit
-// the correct server regardless of which frame the page is rendered in.
-export const authClient = createAuthClient({
-  baseURL:
-    process.env.NEXT_PUBLIC_APP_URL ??
-    (typeof window !== "undefined" ? window.location.origin : undefined),
-})
+// Do NOT pass a custom baseURL here. In the v0 preview sandbox the app
+// runs inside a cross-origin iframe; window.location.origin would point
+// at the iframe host, not the Next.js server. Better Auth's client
+// resolves the correct /api/auth/* path automatically from the document.
+export const authClient = createAuthClient()
 
 export const { signIn, signUp, signOut, useSession } = authClient
