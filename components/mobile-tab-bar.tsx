@@ -3,10 +3,11 @@
 import { useState, useRef, useLayoutEffect } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Home, Images, ClipboardList, Phone, X, MessageCircle } from "lucide-react"
+import { Home, Images, ClipboardList, Phone, X, MessageCircle, UserCircle } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { site } from "@/lib/site"
 import { useI18n } from "@/components/providers/i18n-provider"
+import { useSession } from "@/lib/auth-client"
 import {
   Drawer,
   DrawerClose,
@@ -20,12 +21,14 @@ const TABS = [
   { key: "nav.home",  href: "/",           icon: Home,          match: (p: string) => p === "/" },
   { key: "nav.work",  href: "/realisations", icon: Images,       match: (p: string) => p.startsWith("/realisations") },
   { key: "nav.order", href: "/commande",   icon: ClipboardList, match: (p: string) => p.startsWith("/commande"), primary: true },
+  { key: "nav.account", href: "/compte",   icon: UserCircle,    match: (p: string) => p.startsWith("/compte") },
 ]
 
 export function MobileTabBar() {
   const { t } = useI18n()
   const pathname = usePathname()
   const [callOpen, setCallOpen] = useState(false)
+  const { data: session } = useSession()
 
   // refs to each tab button so we can measure position for the sliding pill
   const tabRefs = useRef<(HTMLAnchorElement | null)[]>([])
@@ -81,10 +84,11 @@ export function MobileTabBar() {
             {TABS.map((tab, i) => {
               const Icon = tab.icon
               const isActive = tab.match(pathname)
+              const href = tab.key === "nav.account" && !session?.user ? "/sign-in" : tab.href
               return (
                 <Link
                   key={tab.href}
-                  href={tab.href}
+                  href={href}
                   ref={(el) => { tabRefs.current[i] = el }}
                   className={cn(
                     "relative z-10 flex flex-1 flex-col items-center justify-center gap-0.5 py-3 text-[0.65rem] font-semibold tracking-wide transition-colors duration-200",

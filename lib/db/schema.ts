@@ -227,6 +227,29 @@ export const sliderSlides = pgTable("slider_slides", {
   createdAt:  timestamp("createdAt").notNull().defaultNow(),
 })
 
+// ── User Wallet ───────────────────────────────────────────────────────────────
+
+export const userWallets = pgTable("user_wallets", {
+  id:            serial("id").primaryKey(),
+  userId:        text("userId").notNull().unique(),
+  balance:       real("balance").notNull().default(0),
+  loyaltyPoints: integer("loyaltyPoints").notNull().default(0),
+  createdAt:     timestamp("createdAt").notNull().defaultNow(),
+  updatedAt:     timestamp("updatedAt").notNull().defaultNow(),
+})
+
+// type: "deposit" | "withdrawal" | "points_earned" | "points_redeemed" | "refund"
+export const walletTransactions = pgTable("wallet_transactions", {
+  id:           serial("id").primaryKey(),
+  userId:       text("userId").notNull(),
+  type:         text("type").notNull(),
+  amount:       real("amount").notNull(),
+  pointsAmount: integer("pointsAmount"),
+  description:  text("description"),
+  refId:        text("refId"),
+  createdAt:    timestamp("createdAt").notNull().defaultNow(),
+})
+
 export const reviews = pgTable("reviews", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
