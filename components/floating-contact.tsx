@@ -1,9 +1,20 @@
+"use client"
+
 import { Phone, MessageCircle } from "lucide-react"
+import { usePathname } from "next/navigation"
 import { site } from "@/lib/site"
 
 export function FloatingContact() {
+  const pathname = usePathname()
+
+  // Hide the bubble while the user is going through the ordering flow
+  const isOrdering = pathname.startsWith("/commande")
+  if (isOrdering) return null
+
   return (
-    <div className="fixed bottom-1/2 end-4 z-50 flex flex-col gap-3 lg:bottom-5 lg:end-5">
+    // bottom-24 sits just above the mobile tab bar (h-16 + safe area ~h-8)
+    // On desktop (lg) the tab bar is hidden so we drop back to bottom-6
+    <div className="fixed bottom-24 end-4 z-50 flex flex-col gap-3 lg:bottom-6 lg:end-6">
       <a
         href={site.whatsappHref}
         target="_blank"
