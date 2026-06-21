@@ -17,7 +17,7 @@ export const PAYMENT_CONFIG = {
   /**
    * PAYPAL.ME
    * Your PayPal.me username (without the https://paypal.me/ prefix).
-   * Example: "zynclean" → https://paypal.me/zynclean
+   * Example: "zyncleen" → https://paypal.me/zyncleen
    */
   paypalUsername: "REPLACE_ME",
 
@@ -39,5 +39,5 @@ export const PAYMENT_CONFIG = {
   /**
    * BUSINESS INFO (shown on bank transfer instructions)
    */
-  beneficiary: "Zynclean",
+  beneficiary: "Zyncleen",
 } as const

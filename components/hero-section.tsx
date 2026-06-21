@@ -55,7 +55,7 @@ export function HeroSection() {
           <div className="overflow-hidden rounded-2xl border border-border shadow-xl">
             <Image
               src="/hero-cleaning.png"
-              alt="Zynclean"
+              alt="Zyncleen"
               width={720}
               height={560}
               priority

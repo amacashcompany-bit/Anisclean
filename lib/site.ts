@@ -1,10 +1,10 @@
 export const site = {
-  name: "Zynclean",
+  name: "Zyncleen",
   tagline: "Nettoyage · Dijon",
   phoneDisplay: "+33 7 68 52 67 12",
   phoneHref: "tel:+33768526712",
   whatsappHref: "https://wa.me/33768526712",
-  email: "Zynclean@gmail.com",
+  email: "Zyncleen@gmail.com",
 }
 
 export const navLinks = [

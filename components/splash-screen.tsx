@@ -125,7 +125,7 @@ export function SplashScreen() {
             className="text-4xl font-black tracking-wider"
             style={{ color: "#0d9488", fontFamily: "var(--font-inter)" }}
           >
-            CLEAN
+            CLEEN
           </span>
         </div>
 
