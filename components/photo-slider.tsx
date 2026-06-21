@@ -100,7 +100,7 @@ const TAG_STYLE: Record<string, string> = {
 /* ─── promo overlay ───────────────────────────────────────────────── */
 function PromoOverlay({ t }: { t: (k: string) => string }) {
   return (
-    <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/45 px-6 text-center">
+    <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/45 px-6 pb-14 text-center">
       {/* logo */}
       <div className="mb-4 flex items-center gap-2">
         <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[oklch(0.7_0.13_232)] shadow-lg">
@@ -191,7 +191,7 @@ export function PhotoSlider({ compact = false }: { compact?: boolean }) {
   return (
     <section
       className="relative w-full overflow-hidden bg-black"
-      style={{ height: compact ? "clamp(280px, 40vw, 520px)" : "clamp(320px, 56vw, 680px)" }}
+      style={{ height: compact ? "clamp(360px, 48vw, 560px)" : "clamp(420px, 60vw, 720px)" }}
       onTouchStart={onTouchStart}
       onTouchEnd={onTouchEnd}
     >
@@ -232,7 +232,7 @@ export function PhotoSlider({ compact = false }: { compact?: boolean }) {
 
             {/* regular slide content */}
             {slide.tag !== "promo" && isActive && (
-              <div className="absolute bottom-0 left-0 right-0 p-6 md:p-10">
+              <div className="absolute bottom-0 left-0 right-0 p-6 pb-14 md:p-10 md:pb-16">
                 <span className={`mb-3 inline-block rounded-full px-3 py-1 text-xs font-bold ${TAG_STYLE[slide.tag]}`}>
                   {tagLabel[slide.tag]}
                 </span>
@@ -287,7 +287,7 @@ export function PhotoSlider({ compact = false }: { compact?: boolean }) {
       </button>
 
       {/* ── dot indicators ──────────────────────────────────────────── */}
-      <div className="absolute bottom-4 left-1/2 z-20 flex -translate-x-1/2 items-center gap-2">
+      <div className="absolute bottom-6 left-1/2 z-20 flex -translate-x-1/2 items-center gap-2">
         {SLIDES.map((_, i) => (
           <button
             key={i}
