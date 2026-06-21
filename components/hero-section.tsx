@@ -1,11 +1,11 @@
 "use client"
 
-import Image from "next/image"
 import Link from "next/link"
 import { Phone, Sparkles, Star, BadgePercent } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { site } from "@/lib/site"
 import { useI18n } from "@/components/providers/i18n-provider"
+import { PhotoSlider } from "@/components/photo-slider"
 
 export function HeroSection() {
   const { t } = useI18n()
@@ -51,23 +51,8 @@ export function HeroSection() {
           </div>
         </div>
 
-        <div className="relative">
-          <div className="overflow-hidden rounded-2xl border border-border shadow-xl">
-            <Image
-              src="/hero-cleaning.png"
-              alt="Zyncleen"
-              width={720}
-              height={560}
-              priority
-              className="h-full w-full object-cover"
-            />
-          </div>
-          <div className="absolute -bottom-5 -left-5 hidden rounded-2xl border border-border bg-background p-4 shadow-lg sm:block">
-            <p className="text-2xl font-extrabold text-foreground">
-              15 €<span className="text-sm font-medium text-muted-foreground"> {t("hero.priceUnit")} {t("hero.priceAfter")}</span>
-            </p>
-            <p className="text-sm text-muted-foreground line-through">30 €/h</p>
-          </div>
+        <div className="relative overflow-hidden rounded-2xl border border-border shadow-xl">
+          <PhotoSlider compact />
         </div>
       </div>
     </section>

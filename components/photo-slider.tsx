@@ -138,7 +138,7 @@ function PromoOverlay({ t }: { t: (k: string) => string }) {
 }
 
 /* ─── component ───────────────────────────────────────────────────── */
-export function PhotoSlider() {
+export function PhotoSlider({ compact = false }: { compact?: boolean }) {
   const { t } = useI18n()
   const [active, setActive] = useState(0)
   const [prev, setPrev]     = useState<number | null>(null)
@@ -191,7 +191,7 @@ export function PhotoSlider() {
   return (
     <section
       className="relative w-full overflow-hidden bg-black"
-      style={{ height: "clamp(320px, 56vw, 680px)" }}
+      style={{ height: compact ? "clamp(280px, 40vw, 520px)" : "clamp(320px, 56vw, 680px)" }}
       onTouchStart={onTouchStart}
       onTouchEnd={onTouchEnd}
     >

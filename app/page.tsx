@@ -8,7 +8,6 @@ import { ProcessSection } from "@/components/process-section"
 import { AreaSection } from "@/components/area-section"
 import { TestimonialsSection } from "@/components/testimonials-section"
 import { FaqSection } from "@/components/faq-section"
-import { PhotoSlider } from "@/components/photo-slider"
 import { SiteFooter } from "@/components/site-footer"
 import { FloatingContact } from "@/components/floating-contact"
 import { getApprovedReviews } from "@/lib/db/admin-actions"
@@ -31,7 +30,6 @@ export default async function Page() {
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
-      <PhotoSlider />
       <SiteHeader />
       <main className="flex-1">
         <HeroSection />
