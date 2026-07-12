@@ -176,55 +176,44 @@ export function AdminInvoicesClient({ invoices }: Props) {
     })
   }
 
-  async function handleDownload(inv: Invoice) {
-    setDownloading(inv.id)
+  async function handleDownload(inv?: Invoice) {
+    // Use provided invoice or fallback to viewing state
+    const invoiceToDownload = inv || viewing
+    if (!invoiceToDownload) return
+
+    // If a specific invoice was passed (from table row action), temporarily set it as viewing for ref
+    const wasViewing = viewing
+    if (inv) setViewing(inv)
+
+    setDownloading(invoiceToDownload.id)
     try {
-      const html2canvas = (await import("html2canvas")).default
-      const { jsPDF } = await import("jspdf")
+      // Wait a tick for React to render the invoice if we just set it
+      await new Promise((resolve) => setTimeout(resolve, 50))
 
-      // Create a temporary container for the invoice document
-      const container = document.createElement("div")
-      container.style.position = "absolute"
-      container.style.left = "-9999px"
-      container.style.width = "720px"
-      container.style.backgroundColor = "white"
-      document.body.appendChild(container)
+      if (!printRef.current) return
 
-      // Render the invoice document into the container
-      const { createRoot } = await import("react-dom/client")
-      const root = createRoot(container)
-      root.render(
-        <AdminInvoiceDocument invoice={inv as any} lang="fr" t={(key) => key} />
-      )
-
-      // Wait for React to render
-      await new Promise((resolve) => setTimeout(resolve, 500))
-
-      // Capture the rendered invoice as an image
-      const canvas = await html2canvas(container, {
+      const [{ default: html2canvas }, { jsPDF }] = await Promise.all([
+        import("html2canvas-pro"),
+        import("jspdf"),
+      ])
+      const canvas = await html2canvas(printRef.current, {
         scale: 2,
+        backgroundColor: "#ffffff",
         useCORS: true,
-        logging: false,
       })
-
-      // Create PDF from canvas
-      const doc = new jsPDF({ format: "a4", unit: "mm" })
       const imgData = canvas.toDataURL("image/png")
-      const pageWidth = doc.internal.pageSize.getWidth()
-      const pageHeight = doc.internal.pageSize.getHeight()
-      const imgWidth = pageWidth
-      const imgHeight = (canvas.height * pageWidth) / canvas.width
-
-      doc.addImage(imgData, "PNG", 0, 0, imgWidth, imgHeight)
-      doc.save(`Facture_${inv.number}_Zyncleen.pdf`)
-
-      // Cleanup
-      root.unmount()
-      document.body.removeChild(container)
+      const pdf = new jsPDF({ orientation: "portrait", unit: "pt", format: "a4" })
+      const pageWidth = pdf.internal.pageSize.getWidth()
+      const imgWidth = pageWidth - 40
+      const imgHeight = (canvas.height * imgWidth) / canvas.width
+      pdf.addImage(imgData, "PNG", 20, 20, imgWidth, imgHeight)
+      pdf.save(`Facture_${invoiceToDownload.number}_Zyncleen.pdf`)
     } catch (error) {
-      console.error("Error downloading invoice:", error)
+      console.error("[v0] PDF generation error:", error)
     } finally {
       setDownloading(null)
+      // Restore viewing state if we changed it
+      if (inv && wasViewing !== inv) setViewing(wasViewing)
     }
   }
 
@@ -471,7 +460,7 @@ export function AdminInvoicesClient({ invoices }: Props) {
                 <AdminInvoiceDocument invoice={viewing as any} lang="fr" t={(key) => key} />
               </div>
               <DialogFooter className="flex-wrap gap-2">
-                <Button variant="outline" className="gap-2" onClick={() => handleDownload(viewing)} disabled={downloading === viewing.id}>
+                <Button variant="outline" className="gap-2" onClick={() => handleDownload()} disabled={downloading === viewing.id}>
                   <Download className="size-4" />
                   {t("admin.invoices.download")}
                 </Button>
