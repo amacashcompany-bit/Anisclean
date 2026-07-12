@@ -42,7 +42,7 @@ const C = {
 }
 
 const BLUE = "#4A90E2"
-const DARK_INK = "#000000"
+const DARK_INK = "#1e2a44"
 
 /** Invoice rendered with inline hex styles so html2canvas captures it correctly (no oklch). */
 export const InvoiceDocument = forwardRef<HTMLDivElement, Props>(function InvoiceDocument({ data, lang, dir, t }, ref) {
@@ -66,52 +66,53 @@ export const InvoiceDocument = forwardRef<HTMLDivElement, Props>(function Invoic
         textAlign: dir === "rtl" ? "right" : "left",
       }}
     >
-      {/* Header with Zyncleen Branding in Blue */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20, gap: 16 }}>
-        {/* Left: Zyncleen Logo */}
-        <div>
-          <div style={{ fontSize: 18, fontWeight: 900, color: BLUE, letterSpacing: -0.5 }}>
+      {/* Top Section: Left Company Info + Right Client Info + Invoice Metadata */}
+      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 24, gap: 20 }}>
+        {/* Left Column: Zyncleen + Company Info + Invoice Details */}
+        <div style={{ flex: 1 }}>
+          {/* Zyncleen Logo in Blue */}
+          <div style={{ fontSize: 14, fontWeight: 700, color: BLUE, marginBottom: 16 }}>
             Zyncleen
           </div>
-        </div>
 
-        {/* Right: Invoice Metadata */}
-        <div style={{ textAlign: "right", fontSize: 11 }}>
-          <div style={{ color: C.sub, marginBottom: 8 }}>
+          {/* Company Details in Blue */}
+          <div style={{ fontSize: 10, lineHeight: 1.8, color: BLUE, marginBottom: 12 }}>
+            <div>Entreprise individuelle Zyncleen</div>
+            <div>2 rue de pommard</div>
+            <div>21800 Dijon</div>
+            <div>FR</div>
+          </div>
+
+          {/* Invoice Details in Blue */}
+          <div style={{ fontSize: 10, lineHeight: 1.8, color: BLUE }}>
             <div>Facture N° {data.number}</div>
-            <div>Date: {data.date}</div>
-          </div>
-        </div>
-      </div>
-
-      {/* Company Info and Customer Info */}
-      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 20, fontSize: 10 }}>
-        {/* Left: Company Info */}
-        <div>
-          <div style={{ fontWeight: 700, color: DARK_INK, marginBottom: 4 }}>
-            Entreprise individuelle Zyncleen
-          </div>
-          <div style={{ color: C.sub, lineHeight: 1.6 }}>
-            2 rue de pommard<br />
-            21800 Dijon<br />
-            FR
+            <div>Date d&apos;émission : {data.date}</div>
           </div>
         </div>
 
-        {/* Right: Customer Info in Blue */}
-        <div style={{ textAlign: "right" }}>
-          <div style={{ fontWeight: 700, color: BLUE, marginBottom: 2 }}>
+        {/* Right Column: Client Info */}
+        <div style={{ flex: 1, textAlign: "right" }}>
+          {/* Client Name in Blue */}
+          <div style={{ fontSize: 12, fontWeight: 700, color: BLUE, marginBottom: 2 }}>
             {customer.name?.toUpperCase() || "CLIENT"}
           </div>
-          <div style={{ color: C.sub, lineHeight: 1.6 }}>
-            {customer.email && <div>{customer.email}</div>}
-            {customer.phone && <div>{customer.phone}</div>}
+
+          {/* Client Address in Blue */}
+          <div style={{ fontSize: 10, lineHeight: 1.8, color: BLUE, marginBottom: 12 }}>
             {customer.address && <div>{customer.address}</div>}
-            {customer.zip && customer.city && <div>{customer.zip} {customer.city}</div>}
-            {!customer.address && <div>France</div>}
+            {customer.zip && customer.city && <div>{customer.zip}   {customer.city}</div>}
+            <div>France</div>
+          </div>
+
+          {/* Payment Terms */}
+          <div style={{ fontSize: 10, color: BLUE }}>
+            Règlement : À réception
           </div>
         </div>
       </div>
+
+      {/* Horizontal Separator */}
+      <div style={{ height: "1px", background: "#e0e0e0", marginBottom: 16 }} />
 
       {/* Items Table with BLUE Header */}
       <table style={{ width: "100%", borderCollapse: "collapse", marginTop: 16, marginBottom: 16 }}>
@@ -162,13 +163,13 @@ export const InvoiceDocument = forwardRef<HTMLDivElement, Props>(function Invoic
       </table>
 
       {/* Totals Section in BLUE */}
-      <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 16, marginBottom: 20 }}>
-        <div style={{ width: 250 }}>
-          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10, marginBottom: 4, paddingBottom: 4, borderBottom: `1px solid #f0f0f0` }}>
-            <span style={{ fontWeight: 600, color: C.sub }}>Total HT</span>
+      <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 12, marginBottom: 20 }}>
+        <div style={{ width: 220 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10, marginBottom: 2 }}>
+            <span style={{ fontWeight: 600, color: BLUE }}>Total HT</span>
             <span style={{ fontWeight: 700, color: BLUE }}>{totals.subtotal} €</span>
           </div>
-          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, fontWeight: 700 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10, fontWeight: 700 }}>
             <span style={{ color: BLUE }}>Total TTC</span>
             <span style={{ color: BLUE }}>{totals.net} €</span>
           </div>
@@ -176,13 +177,13 @@ export const InvoiceDocument = forwardRef<HTMLDivElement, Props>(function Invoic
       </div>
 
       {/* IBAN and BIC in BLUE */}
-      <div style={{ marginBottom: 16, fontSize: 9, lineHeight: 1.8 }}>
+      <div style={{ marginBottom: 12, fontSize: 9, lineHeight: 1.8 }}>
         <div style={{ fontWeight: 700, color: BLUE }}>IBAN : FR6730002039400000058107N70</div>
         <div style={{ fontWeight: 700, color: BLUE }}>BIC : CRLYFRPP</div>
       </div>
 
-      {/* Legal Penalty Text */}
-      <div style={{ fontSize: 8, color: C.sub, lineHeight: 1.6, marginBottom: 12 }}>
+      {/* Legal Penalty Text in Blue */}
+      <div style={{ fontSize: 8, color: BLUE, lineHeight: 1.6, marginBottom: 12 }}>
         <div style={{ marginBottom: 4 }}>
           En cas de retard de paiement, une pénalité de 3 fois le taux d&apos;intérêt légal sera appliquée, à laquelle s&apos;ajoutera une indemnité forfaitaire pour frais de recouvrement de 40€.
         </div>
@@ -190,8 +191,11 @@ export const InvoiceDocument = forwardRef<HTMLDivElement, Props>(function Invoic
       </div>
 
       {/* Footer */}
-      <div style={{ borderTop: `1px solid #f0f0f0`, paddingTop: 8, fontSize: 8, color: C.sub, textAlign: "center" }}>
-        Facture et devis créés avec Time, la facturation électronique conforme et 100% gratuite
+      <div style={{ paddingTop: 8, fontSize: 8, color: BLUE, textAlign: "center" }}>
+        Facture et devis créés avec <span style={{ fontWeight: 700 }}>⊙ Time</span>, la facturation électronique conforme et 100% gratuite
+      </div>
+      <div style={{ fontSize: 8, color: BLUE, textAlign: "center", marginTop: 2 }}>
+        Page 1/1
       </div>
     </div>
   )
