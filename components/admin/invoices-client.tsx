@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useTransition, useRef } from "react"
+import React, { useState, useTransition, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { useI18n } from "@/components/providers/i18n-provider"
 import {
@@ -10,6 +10,7 @@ import {
   updateInvoice,
 } from "@/lib/db/admin-actions"
 import type { invoices } from "@/lib/db/schema"
+import { AdminInvoiceDocument } from "@/components/admin/admin-invoice-document"
 import type { InferSelectModel } from "drizzle-orm"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -178,87 +179,50 @@ export function AdminInvoicesClient({ invoices }: Props) {
   async function handleDownload(inv: Invoice) {
     setDownloading(inv.id)
     try {
-      const settings = await getSiteSettings()
+      const html2canvas = (await import("html2canvas")).default
       const { jsPDF } = await import("jspdf")
-      const doc = new jsPDF({ unit: "mm", format: "a4" })
 
-      const companyName = settings["companyName"] ?? "Zyncleen"
-      const companyAddress = settings["companyAddress"] ?? ""
-      const companyPhone = settings["companyPhone"] ?? ""
-      const companyEmail = settings["companyEmail"] ?? ""
+      // Create a temporary container for the invoice document
+      const container = document.createElement("div")
+      container.style.position = "absolute"
+      container.style.left = "-9999px"
+      container.style.width = "720px"
+      container.style.backgroundColor = "white"
+      document.body.appendChild(container)
 
-      // Header
-      doc.setFontSize(20)
-      doc.setFont("helvetica", "bold")
-      doc.text("FACTURE", 20, 25)
-      doc.setFontSize(10)
-      doc.setFont("helvetica", "normal")
-      doc.text(companyName, 140, 20)
-      if (companyAddress) doc.text(companyAddress, 140, 26)
-      if (companyPhone) doc.text(companyPhone, 140, 32)
-      if (companyEmail) doc.text(companyEmail, 140, 38)
+      // Render the invoice document into the container
+      const { createRoot } = await import("react-dom/client")
+      const root = createRoot(container)
+      root.render(
+        <AdminInvoiceDocument invoice={inv as any} lang="fr" t={(key) => key} />
+      )
 
-      // Invoice meta
-      doc.setFontSize(11)
-      doc.text(`N° ${inv.number}`, 20, 38)
-      doc.text(`Date: ${new Date(inv.createdAt).toLocaleDateString("fr-FR")}`, 20, 44)
+      // Wait for React to render
+      await new Promise((resolve) => setTimeout(resolve, 500))
 
-      // Bill to
-      doc.setFont("helvetica", "bold")
-      doc.text("Facturé à :", 20, 56)
-      doc.setFont("helvetica", "normal")
-      doc.text(inv.clientName, 20, 62)
-      if (inv.clientEmail) doc.text(inv.clientEmail, 20, 68)
-      if (inv.clientPhone) doc.text(inv.clientPhone, 20, 74)
-      if (inv.clientAddress) doc.text(inv.clientAddress, 20, 80)
-
-      // Table header
-      const tableTop = 92
-      doc.setFillColor(240, 240, 240)
-      doc.rect(20, tableTop - 6, 170, 8, "F")
-      doc.setFont("helvetica", "bold")
-      doc.setFontSize(9)
-      doc.text("Prestation", 22, tableTop)
-      doc.text("Qté", 120, tableTop)
-      doc.text("P.U.", 135, tableTop)
-      doc.text("Montant", 160, tableTop)
-
-      // Table rows
-      doc.setFont("helvetica", "normal")
-      let y = tableTop + 8
-      inv.items.forEach((item) => {
-        doc.text(item.description.slice(0, 55), 22, y)
-        doc.text(String(item.qty), 120, y)
-        doc.text(`${item.unitPrice.toFixed(2)} €`, 135, y)
-        doc.text(`${item.amount.toFixed(2)} €`, 160, y)
-        y += 7
+      // Capture the rendered invoice as an image
+      const canvas = await html2canvas(container, {
+        scale: 2,
+        useCORS: true,
+        logging: false,
       })
 
-      // Totals
-      y += 4
-      doc.line(20, y, 190, y)
-      y += 6
-      doc.text("Sous-total", 120, y)
-      doc.text(`${inv.subtotal.toFixed(2)} €`, 160, y)
-      if (inv.taxCredit > 0) {
-        y += 6
-        doc.text("Crédit d'impôt (50 %)", 120, y)
-        doc.text(`-${inv.taxCredit.toFixed(2)} €`, 160, y)
-      }
-      y += 6
-      doc.setFont("helvetica", "bold")
-      doc.text("TOTAL", 120, y)
-      doc.text(`${inv.total.toFixed(2)} €`, 160, y)
+      // Create PDF from canvas
+      const doc = new jsPDF({ format: "a4", unit: "mm" })
+      const imgData = canvas.toDataURL("image/png")
+      const pageWidth = doc.internal.pageSize.getWidth()
+      const pageHeight = doc.internal.pageSize.getHeight()
+      const imgWidth = pageWidth
+      const imgHeight = (canvas.height * pageWidth) / canvas.width
 
-      // Notes
-      if (inv.notes) {
-        y += 14
-        doc.setFont("helvetica", "italic")
-        doc.setFontSize(8)
-        doc.text(inv.notes, 20, y)
-      }
+      doc.addImage(imgData, "PNG", 0, 0, imgWidth, imgHeight)
+      doc.save(`Facture_${inv.number}_Zyncleen.pdf`)
 
-      doc.save(`facture-${inv.number}.pdf`)
+      // Cleanup
+      root.unmount()
+      document.body.removeChild(container)
+    } catch (error) {
+      console.error("Error downloading invoice:", error)
     } finally {
       setDownloading(null)
     }
@@ -503,35 +467,8 @@ export function AdminInvoicesClient({ invoices }: Props) {
                   <Badge variant={STATUS_BADGE[viewing.status] ?? "outline"}>{statusLabel(viewing.status)}</Badge>
                 </DialogDescription>
               </DialogHeader>
-              <div ref={printRef} className="flex flex-col gap-4 py-2">
-                <Card>
-                  <CardHeader><CardTitle className="text-sm">Client</CardTitle></CardHeader>
-                  <CardContent className="text-sm flex flex-col gap-0.5">
-                    <p className="font-medium">{viewing.clientName}</p>
-                    {viewing.clientEmail && <p className="text-muted-foreground">{viewing.clientEmail}</p>}
-                    {viewing.clientPhone && <p className="text-muted-foreground">{viewing.clientPhone}</p>}
-                    {viewing.clientAddress && <p className="text-muted-foreground">{viewing.clientAddress}</p>}
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardContent className="pt-4 flex flex-col gap-2 text-sm">
-                    {viewing.items.map((item, i) => (
-                      <div key={i} className="flex justify-between">
-                        <div>
-                          <p>{item.description}</p>
-                          <p className="text-xs text-muted-foreground">{item.qty} × {item.unitPrice.toFixed(2)} €</p>
-                        </div>
-                        <p className="font-semibold">{item.amount.toFixed(2)} €</p>
-                      </div>
-                    ))}
-                    <Separator />
-                    <div className="flex justify-between font-bold">
-                      <span>Total</span>
-                      <span>{viewing.total.toFixed(2)} €</span>
-                    </div>
-                    {viewing.notes && <p className="text-xs text-muted-foreground italic">{viewing.notes}</p>}
-                  </CardContent>
-                </Card>
+              <div ref={printRef} className="bg-white">
+                <AdminInvoiceDocument invoice={viewing as any} lang="fr" t={(key) => key} />
               </div>
               <DialogFooter className="flex-wrap gap-2">
                 <Button variant="outline" className="gap-2" onClick={() => handleDownload(viewing)} disabled={downloading === viewing.id}>
