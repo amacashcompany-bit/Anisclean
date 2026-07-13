@@ -146,8 +146,8 @@ export function AccountDashboard({ user, wallet: initialWallet, transactions: in
                 </div>
                 <p className="text-xs text-muted-foreground">
                   Pour modifier vos informations, contactez-nous à{" "}
-                  <a href="mailto:Zyncleen@gmail.com" className="text-sky-500 hover:underline">
-                    Zyncleen@gmail.com
+                  <a href="mailto:Anisclean@gmail.com" className="text-sky-500 hover:underline">
+                    Anisclean@gmail.com
                   </a>
                 </p>
               </div>
@@ -208,15 +208,15 @@ export function AccountDashboard({ user, wallet: initialWallet, transactions: in
                       })
                     }}
                     disabled={isPending || !depositAmount}
-                    className="bg-sky-500 text-white hover:bg-sky-400"
+                    className="gap-2"
                   >
-                    {isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : "Déposer"}
+                    {isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowDownLeft className="h-4 w-4" />}
+                    Déposer
                   </Button>
                 </div>
-                <p className="mt-1.5 text-xs text-muted-foreground">+10 points de fidélité par euro déposé</p>
               </div>
 
-              {/* Withdrawal */}
+              {/* Withdraw */}
               <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
                 <h3 className="mb-3 font-semibold">Retirer des fonds</h3>
                 <div className="flex gap-2">
@@ -241,47 +241,38 @@ export function AccountDashboard({ user, wallet: initialWallet, transactions: in
                       })
                     }}
                     disabled={isPending || !withdrawAmount}
+                    className="gap-2"
                   >
-                    {isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : "Retirer"}
+                    {isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowUpRight className="h-4 w-4" />}
+                    Retirer
                   </Button>
                 </div>
               </div>
-
-              {actionError && (
-                <p className="rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive">{actionError}</p>
-              )}
 
               {/* Transaction history */}
               <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
                 <h3 className="mb-3 font-semibold">Historique des transactions</h3>
                 {transactions.length === 0 ? (
-                  <p className="py-6 text-center text-sm text-muted-foreground">Aucune transaction pour l&apos;instant</p>
+                  <p className="text-sm text-muted-foreground">Aucune transaction pour le moment.</p>
                 ) : (
-                  <ul className="flex flex-col divide-y divide-border">
+                  <div className="flex flex-col gap-2">
                     {transactions.map((tx) => (
-                      <li key={tx.id} className="flex items-center gap-3 py-3">
-                        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-muted">
-                          {TX_ICONS[tx.type] ?? <RefreshCw className="h-4 w-4" />}
+                      <div key={tx.id} className="flex items-center justify-between rounded-xl border border-border bg-muted/30 p-3">
+                        <div className="flex items-center gap-3">
+                          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-background">
+                            {TX_ICONS[tx.type] ?? <RefreshCw className="h-4 w-4" />}
+                          </div>
+                          <div>
+                            <p className="text-sm font-medium">{tx.description}</p>
+                            <p className="text-xs text-muted-foreground">{fmtDate(tx.createdAt)}</p>
+                          </div>
+                        </div>
+                        <span className={`text-sm font-semibold ${tx.amount >= 0 ? "text-emerald-500" : "text-rose-500"}`}>
+                          {tx.amount >= 0 ? "+" : ""}{fmt(tx.amount)}
                         </span>
-                        <div className="flex-1 min-w-0">
-                          <p className="truncate text-sm font-medium text-foreground">{tx.description ?? tx.type}</p>
-                          <p className="text-xs text-muted-foreground">{fmtDate(tx.createdAt)}</p>
-                        </div>
-                        <div className="text-right shrink-0">
-                          {tx.amount !== 0 && (
-                            <p className={`text-sm font-bold ${tx.amount > 0 ? "text-emerald-600" : "text-rose-500"}`}>
-                              {tx.amount > 0 ? "+" : ""}{fmt(tx.amount)}
-                            </p>
-                          )}
-                          {tx.pointsAmount && (
-                            <p className={`text-xs font-semibold ${(tx.pointsAmount ?? 0) > 0 ? "text-amber-500" : "text-muted-foreground"}`}>
-                              {(tx.pointsAmount ?? 0) > 0 ? "+" : ""}{tx.pointsAmount} pts
-                            </p>
-                          )}
-                        </div>
-                      </li>
+                      </div>
                     ))}
-                  </ul>
+                  </div>
                 )}
               </div>
             </div>
@@ -289,37 +280,31 @@ export function AccountDashboard({ user, wallet: initialWallet, transactions: in
 
           {/* ── History tab ──────────────────────────────────── */}
           <TabsContent value="history">
-            <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
-              <h2 className="mb-4 font-semibold">Mes services</h2>
+            <div className="flex flex-col gap-4">
               {orders.length === 0 ? (
-                <div className="flex flex-col items-center gap-3 py-12 text-center">
-                  <History className="h-10 w-10 text-muted-foreground/40" />
-                  <p className="text-sm text-muted-foreground">Vous n&apos;avez pas encore de service enregistré.</p>
-                  <Button render={<a href="/#services" />} className="bg-sky-500 text-white hover:bg-sky-400">
-                    Découvrir nos services
-                  </Button>
+                <div className="rounded-2xl border border-border bg-card p-8 text-center shadow-sm">
+                  <History className="mx-auto mb-3 h-8 w-8 text-muted-foreground" />
+                  <p className="text-sm text-muted-foreground">Aucune commande pour le moment.</p>
                 </div>
               ) : (
-                <ul className="flex flex-col gap-3">
-                  {orders.map((order) => {
-                    const s = STATUS_LABELS[order.status] ?? { label: order.status, variant: "outline" as const }
-                    return (
-                      <li key={order.id} className="rounded-xl border border-border p-4">
-                        <div className="flex items-start justify-between gap-2">
-                          <div>
-                            <p className="font-semibold text-foreground">{order.reference}</p>
-                            <p className="text-xs text-muted-foreground">{fmtDate(order.createdAt)}</p>
-                          </div>
-                          <Badge variant={s.variant}>{s.label}</Badge>
+                orders.map((order) => {
+                  const st = STATUS_LABELS[order.status] ?? STATUS_LABELS.pending
+                  return (
+                    <div key={order.id} className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="font-semibold">Commande #{order.id}</p>
+                          <p className="text-xs text-muted-foreground">{fmtDate(order.createdAt)}</p>
                         </div>
-                        <div className="mt-3 flex items-center justify-between">
-                          <p className="text-sm text-muted-foreground">{order.address}, {order.city}</p>
-                          <p className="font-bold text-foreground">{fmt(order.total)}</p>
-                        </div>
-                      </li>
-                    )
-                  })}
-                </ul>
+                        <Badge variant={st.variant}>{st.label}</Badge>
+                      </div>
+                      <div className="mt-3 flex items-center justify-between text-sm">
+                        <span className="text-muted-foreground">Total</span>
+                        <span className="font-semibold">{fmt(order.total)}</span>
+                      </div>
+                    </div>
+                  )
+                })
               )}
             </div>
           </TabsContent>
@@ -327,38 +312,22 @@ export function AccountDashboard({ user, wallet: initialWallet, transactions: in
           {/* ── Loyalty tab ──────────────────────────────────── */}
           <TabsContent value="loyalty">
             <div className="flex flex-col gap-4">
-
-              {/* Points card */}
-              <div className="rounded-2xl border border-amber-200 bg-gradient-to-br from-amber-50 to-orange-50 p-6 dark:border-amber-800/40 dark:from-amber-950/30 dark:to-orange-950/20">
-                <div className="flex items-center gap-3">
-                  <span className="flex h-12 w-12 items-center justify-center rounded-full bg-amber-400 text-white">
-                    <Star className="h-6 w-6" />
-                  </span>
-                  <div>
-                    <p className="text-sm text-muted-foreground">Vos points fidélité</p>
-                    <p className="text-4xl font-black text-amber-500">{wallet.loyaltyPoints}</p>
-                  </div>
-                </div>
-                <div className="mt-4 rounded-xl bg-white/60 p-3 dark:bg-black/20">
-                  <p className="text-sm font-medium text-foreground">
-                    Valeur estimée : <span className="font-bold text-amber-600">{fmt(wallet.loyaltyPoints / 100)}</span>
-                  </p>
-                  <p className="text-xs text-muted-foreground">100 points = 1,00 €</p>
-                </div>
+              {/* Points balance */}
+              <div className="rounded-2xl border border-amber-200 bg-amber-50 p-6 text-center shadow-sm dark:border-amber-800/40 dark:bg-amber-950/30">
+                <Star className="mx-auto mb-2 h-8 w-8 text-amber-500" />
+                <p className="text-4xl font-black text-amber-500">{wallet.loyaltyPoints}</p>
+                <p className="mt-1 text-sm text-muted-foreground">Points fidélité disponibles</p>
+                <p className="mt-2 text-xs text-muted-foreground">1 point = 0,10 € de réduction</p>
               </div>
 
               {/* Redeem */}
               <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
-                <h3 className="mb-1 font-semibold">Convertir en argent</h3>
-                <p className="mb-3 text-sm text-muted-foreground">
-                  Convertissez vos points en solde portefeuille. Minimum 100 points.
-                </p>
+                <h3 className="mb-3 font-semibold">Utiliser mes points</h3>
                 <div className="flex gap-2">
                   <Input
                     type="number"
-                    min="100"
-                    step="100"
-                    placeholder="Nombre de points (min. 100)"
+                    min="1"
+                    placeholder="Nombre de points"
                     value={redeemPts}
                     onChange={(e) => setRedeemPts(e.target.value)}
                     className="flex-1"
@@ -366,47 +335,25 @@ export function AccountDashboard({ user, wallet: initialWallet, transactions: in
                   <Button
                     onClick={() => {
                       const pts = parseInt(redeemPts)
-                      if (!pts || pts < 100) return
+                      if (!pts || pts <= 0) return
                       runAction(async () => {
                         await redeemLoyaltyPoints(pts)
-                        const euros = pts / 100
-                        setWallet((w) => ({ ...w, loyaltyPoints: w.loyaltyPoints - pts, balance: w.balance + euros }))
+                        setWallet((w) => ({ ...w, loyaltyPoints: w.loyaltyPoints - pts, balance: w.balance + pts * 0.1 }))
                         setRedeemPts("")
                       })
                     }}
-                    disabled={isPending || !redeemPts || wallet.loyaltyPoints < 100}
-                    className="bg-amber-500 text-white hover:bg-amber-400"
+                    disabled={isPending || !redeemPts}
+                    className="gap-2"
                   >
-                    {isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : "Convertir"}
+                    {isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Gift className="h-4 w-4" />}
+                    Convertir
                   </Button>
                 </div>
-                {redeemPts && parseInt(redeemPts) >= 100 && (
-                  <p className="mt-1.5 text-xs text-emerald-600">
-                    = +{fmt(parseInt(redeemPts) / 100)} sur votre portefeuille
-                  </p>
-                )}
               </div>
 
               {actionError && (
-                <p className="rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive">{actionError}</p>
+                <p className="text-sm text-rose-500 text-center">{actionError}</p>
               )}
-
-              {/* How to earn */}
-              <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
-                <h3 className="mb-3 font-semibold">Comment gagner des points ?</h3>
-                <ul className="flex flex-col gap-3">
-                  {[
-                    { action: "Déposer dans le portefeuille", pts: "+10 pts / €" },
-                    { action: "Chaque service commandé", pts: "Bientôt disponible" },
-                    { action: "Parrainer un ami", pts: "Bientôt disponible" },
-                  ].map((row) => (
-                    <li key={row.action} className="flex items-center justify-between rounded-xl border border-border bg-muted/30 px-4 py-3">
-                      <span className="text-sm text-foreground">{row.action}</span>
-                      <Badge variant="outline" className="text-xs font-semibold">{row.pts}</Badge>
-                    </li>
-                  ))}
-                </ul>
-              </div>
             </div>
           </TabsContent>
         </Tabs>

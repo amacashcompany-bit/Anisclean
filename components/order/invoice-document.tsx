@@ -68,16 +68,16 @@ export const InvoiceDocument = forwardRef<HTMLDivElement, Props>(function Invoic
     >
       {/* Top Section: Left Company Info + Right Client Info + Invoice Metadata */}
       <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 24, gap: 20 }}>
-        {/* Left Column: Zyncleen + Company Info + Invoice Details */}
+        {/* Left Column: Anisclean + Company Info + Invoice Details */}
         <div style={{ flex: 1 }}>
-          {/* Zyncleen Logo in Blue */}
+          {/* Anisclean Logo in Blue */}
           <div style={{ fontSize: 14, fontWeight: 700, color: BLUE, marginBottom: 16 }}>
-            Zyncleen
+            Anisclean
           </div>
 
           {/* Company Details in Blue */}
           <div style={{ fontSize: 10, lineHeight: 1.8, color: BLUE, marginBottom: 12 }}>
-            <div>Entreprise individuelle Zyncleen</div>
+            <div>Entreprise individuelle Anisclean</div>
             <div>2 rue de pommard</div>
             <div>21800 Dijon</div>
             <div>FR</div>
