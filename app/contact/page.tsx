@@ -10,7 +10,7 @@ import { site } from "@/lib/site"
 export const metadata: Metadata = {
   title: `Contact — ${site.name}`,
   description:
-    "Contactez Zyncleen pour un devis gratuit, une intervention ou toute question. Réponse rapide par téléphone, WhatsApp ou email.",
+    "Contactez Anisclean pour un devis gratuit, une intervention ou toute question. Réponse rapide par téléphone, WhatsApp ou email.",
 }
 
 const contactItems = [
