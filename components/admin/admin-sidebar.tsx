@@ -58,7 +58,7 @@ export function AdminSidebar() {
           <p className="text-sm font-semibold text-sidebar-foreground leading-tight font-heading">
             {t("admin.title")}
           </p>
-          <p className="text-xs text-muted-foreground">Zyncleen</p>
+          <p className="text-xs text-muted-foreground">Anisclean</p>
         </div>
       </div>
 

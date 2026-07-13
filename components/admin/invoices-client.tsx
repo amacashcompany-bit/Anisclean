@@ -207,7 +207,7 @@ export function AdminInvoicesClient({ invoices }: Props) {
       const imgWidth = pageWidth - 40
       const imgHeight = (canvas.height * imgWidth) / canvas.width
       pdf.addImage(imgData, "PNG", 20, 20, imgWidth, imgHeight)
-      pdf.save(`Facture_${invoiceToDownload.number}_Zyncleen.pdf`)
+      pdf.save(`Facture_${invoiceToDownload.number}_Anisclean.pdf`)
     } catch (error) {
       console.error("[v0] PDF generation error:", error)
     } finally {

@@ -22,7 +22,7 @@ export function AdminSettingsClient({ settings }: Props) {
   const [saved, setSaved] = useState(false)
 
   const [form, setForm] = useState({
-    companyName: settings["companyName"] ?? "Zyncleen",
+    companyName: settings["companyName"] ?? "Anisclean",
     companyPhone: settings["companyPhone"] ?? "",
     companyEmail: settings["companyEmail"] ?? "",
     companyAddress: settings["companyAddress"] ?? "",
