@@ -18,8 +18,8 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 
-// Wave / Z logo mark
-function ZyncleanMark({ size = 38 }: { size?: number }) {
+// Anisclean logo mark
+function AniscleanMark({ size = 38 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 40 40" fill="none" aria-hidden="true">
       <circle cx="20" cy="20" r="20" fill="#0ea5e9" />
@@ -29,13 +29,10 @@ function ZyncleanMark({ size = 38 }: { size?: number }) {
         fill="white"
         fillOpacity="0.25"
       />
-      {/* Z letterform */}
+      {/* A letterform */}
       <path
-        d="M14 15.5 H26 L14 24.5 H26"
-        stroke="white"
-        strokeWidth="2.6"
-        strokeLinecap="round"
-        strokeLinejoin="round"
+        d="M20 10 L12 28 H16 L17.5 24 H22.5 L24 28 H28 L20 10ZM18.5 21 L20 15.5 L21.5 21 H18.5Z"
+        fill="white"
       />
     </svg>
   )
@@ -58,14 +55,14 @@ export function SiteHeader() {
 
         {/* Logo */}
         <Link href="/" className="flex shrink-0 items-center gap-2.5">
-          <ZyncleanMark size={38} />
+          <AniscleanMark size={38} />
           <span className="flex flex-col leading-none">
             <span className="flex items-baseline text-[1.25rem] font-black tracking-tight">
-              <span className="text-white">zyn</span>
-              <span style={{ color: "#38bdf8" }}>cleen</span>
+              <span className="text-white">anis</span>
+              <span style={{ color: "#38bdf8" }}>clean</span>
             </span>
             <span className="text-[0.52rem] font-semibold uppercase tracking-[0.2em]" style={{ color: "rgba(255,255,255,0.45)" }}>
-              SYNC. CLEAN. LIVE.
+              CLEAN. FRESH. SHINE.
             </span>
           </span>
         </Link>
@@ -78,7 +75,7 @@ export function SiteHeader() {
               href={link.href}
               className="text-sm font-medium transition-colors"
               style={{ color: "rgba(255,255,255,0.65)" }}
-              onMouseEnter={(e) => (e.currentTarget.style.color = "white")}
+              onMouseEnter={(e) => (e.currentTarget.style.color = "#fff")}
               onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.65)")}
             >
               {t(link.key)}
@@ -87,130 +84,91 @@ export function SiteHeader() {
         </nav>
 
         {/* Right side */}
-        <div className="flex items-center gap-1">
-          {/* Lang + theme — force white text inside */}
-          <div className="[&_button]:text-white/75 [&_button:hover]:bg-white/10 [&_button:hover]:text-white [&_.text-xs]:text-white/75">
-            <LangThemeControls />
-          </div>
+        <div className="flex items-center gap-2">
+          <LangThemeControls />
 
-          {/* Auth buttons — desktop only */}
-          <div className="hidden items-center gap-2 md:flex">
-            {user ? (
-              <DropdownMenu>
-                <DropdownMenuTrigger className="flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-2.5 py-1.5 text-white transition hover:bg-white/20 focus:outline-none">
-                  <Avatar className="h-6 w-6">
-                    <AvatarFallback className="bg-sky-500 text-[10px] font-bold text-white">{initials}</AvatarFallback>
+          {user ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="relative h-9 w-9 rounded-full p-0">
+                  <Avatar className="h-9 w-9">
+                    <AvatarFallback className="bg-sky-500 text-sm font-bold text-white">
+                      {initials}
+                    </AvatarFallback>
                   </Avatar>
-                  <span className="max-w-[80px] truncate text-sm font-medium">{user.name?.split(" ")[0] ?? user.email}</span>
-                  <ChevronDown className="h-3 w-3 opacity-50" />
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-52">
-                  <div className="px-3 py-2">
-                    <p className="text-sm font-semibold text-foreground">{user.name}</p>
-                    <p className="truncate text-xs text-muted-foreground">{user.email}</p>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <div className="flex items-center gap-2 px-2 py-1.5">
+                  <Avatar className="h-8 w-8">
+                    <AvatarFallback className="bg-sky-500 text-xs font-bold text-white">
+                      {initials}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="flex flex-col">
+                    <span className="text-sm font-medium">{user.name ?? "Utilisateur"}</span>
+                    <span className="text-xs text-muted-foreground truncate max-w-[180px]">{user.email}</span>
                   </div>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => router.push("/compte")} className="flex cursor-pointer items-center gap-2">
-                    <User className="h-4 w-4" /> Mon compte
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => router.push("/compte?tab=wallet")} className="flex cursor-pointer items-center gap-2">
-                    <Wallet className="h-4 w-4" /> Portefeuille
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => router.push("/compte?tab=history")} className="flex cursor-pointer items-center gap-2">
-                    <History className="h-4 w-4" /> Mes services
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem
-                    className="cursor-pointer text-destructive"
-                    onClick={() => signOut({ fetchOptions: { onSuccess: () => { window.location.href = "/" } } })}
-                  >
-                    <LogOut className="mr-2 h-4 w-4" /> Déconnexion
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            ) : (
-              <>
-                <Button render={<Link href="/sign-in" />} variant="ghost" size="sm" className="text-white/75 hover:bg-white/10 hover:text-white">
-                  Connexion
-                </Button>
-                <Button render={<Link href="/sign-up" />} size="sm" className="bg-sky-500 font-semibold text-white hover:bg-sky-400">
-                  S&apos;inscrire
-                </Button>
-              </>
-            )}
-          </div>
+                </div>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => router.push("/compte")}>
+                  <User className="mr-2 h-4 w-4" /> Mon compte
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => router.push("/compte?tab=wallet")}>
+                  <Wallet className="mr-2 h-4 w-4" /> Portefeuille
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => router.push("/compte?tab=history")}>
+                  <History className="mr-2 h-4 w-4" /> Historique
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => signOut().then(() => router.refresh())} className="text-destructive">
+                  <LogOut className="mr-2 h-4 w-4" /> Déconnexion
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <Button
+              size="sm"
+              className="hidden sm:flex bg-sky-500 hover:bg-sky-600 text-white"
+              onClick={() => router.push("/sign-in")}
+            >
+              {t("nav.account")}
+            </Button>
+          )}
 
-          {/* Hamburger */}
+          {/* Mobile hamburger */}
           <button
-            type="button"
-            className="ml-1 inline-flex items-center justify-center rounded-lg p-2 text-white/75 transition hover:bg-white/10 hover:text-white"
-            onClick={() => setOpen((v) => !v)}
-            aria-label={open ? "Fermer" : "Menu"}
-            aria-expanded={open}
+            className="xl:hidden inline-flex h-10 w-10 items-center justify-center rounded-lg text-white/70 hover:text-white hover:bg-white/10 transition-colors"
+            onClick={() => setOpen(!open)}
+            aria-label="Menu"
           >
-            {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            {open ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </button>
         </div>
       </div>
 
-      {/* Mobile drawer */}
+      {/* Mobile nav overlay */}
       {open && (
-        <div className="border-t border-white/10 md:hidden" style={{ background: "#091a2f" }}>
-          <nav className="mx-auto flex max-w-7xl flex-col gap-0.5 px-4 py-3" aria-label="Navigation mobile">
+        <div className="xl:hidden border-t border-white/10" style={{ background: "#0d2240" }}>
+          <nav className="flex flex-col p-4 gap-1">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
+                className="rounded-lg px-3 py-2.5 text-sm font-medium text-white/70 hover:text-white hover:bg-white/10 transition-colors"
                 onClick={() => setOpen(false)}
-                className="rounded-lg px-3 py-2.5 text-sm font-medium transition"
-                style={{ color: "rgba(255,255,255,0.65)" }}
               >
                 {t(link.key)}
               </Link>
             ))}
-
-            <div className="mt-2 flex flex-col gap-2 border-t border-white/10 pt-3">
-              {user ? (
-                <>
-                  <div className="flex items-center gap-2 px-3 pb-1">
-                    <Avatar className="h-8 w-8">
-                      <AvatarFallback className="bg-sky-500 text-xs font-bold text-white">{initials}</AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <p className="text-sm font-semibold text-white">{user.name}</p>
-                      <p className="text-xs text-white/50">{user.email}</p>
-                    </div>
-                  </div>
-                  <Link href="/compte" onClick={() => setOpen(false)}
-                    className="flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium text-white/70 hover:bg-white/10 hover:text-white">
-                    <User className="h-4 w-4" /> Mon compte
-                  </Link>
-                  <Link href="/compte?tab=wallet" onClick={() => setOpen(false)}
-                    className="flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium text-white/70 hover:bg-white/10 hover:text-white">
-                    <Wallet className="h-4 w-4" /> Portefeuille
-                  </Link>
-                  <Link href="/compte?tab=history" onClick={() => setOpen(false)}
-                    className="flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium text-white/70 hover:bg-white/10 hover:text-white">
-                    <History className="h-4 w-4" /> Mes services
-                  </Link>
-                  <button
-                    onClick={() => { setOpen(false); signOut({ fetchOptions: { onSuccess: () => { window.location.href = "/" } } }) }}
-                    className="flex items-center gap-2 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-red-400 hover:bg-white/10"
-                  >
-                    <LogOut className="h-4 w-4" /> Déconnexion
-                  </button>
-                </>
-              ) : (
-                <>
-                  <Button render={<Link href="/sign-in" onClick={() => setOpen(false)} />} variant="outline" className="border-white/20 bg-transparent text-white hover:bg-white/10 hover:text-white">
-                    Connexion
-                  </Button>
-                  <Button render={<Link href="/sign-up" onClick={() => setOpen(false)} />} className="bg-sky-500 font-semibold text-white hover:bg-sky-400">
-                    S&apos;inscrire
-                  </Button>
-                </>
-              )}
-            </div>
+            {!user && (
+              <Button
+                className="mt-2 w-full bg-sky-500 hover:bg-sky-600 text-white"
+                onClick={() => { setOpen(false); router.push("/sign-in") }}
+              >
+                {t("nav.account")}
+              </Button>
+            )}
           </nav>
         </div>
       )}

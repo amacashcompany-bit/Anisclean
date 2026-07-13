@@ -108,10 +108,10 @@ function PromoOverlay({ t }: { t: (k: string) => string }) {
       {/* logo */}
       <div className="mb-4 flex items-center gap-2">
         <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[oklch(0.7_0.13_232)] shadow-lg">
-          <span className="text-xl font-black text-white">Z</span>
+          <span className="text-xl font-black text-white">A</span>
         </div>
         <span className="text-2xl font-black tracking-wider text-white drop-shadow-lg">
-          ZYN<span className="text-[oklch(0.7_0.13_232)]">CLEEN</span>
+          ANIS<span className="text-[oklch(0.7_0.13_232)]">CLEAN</span>
         </span>
       </div>
       {/* badge */}
@@ -144,229 +144,246 @@ function PromoOverlay({ t }: { t: (k: string) => string }) {
 type DbSlide = {
   id: number
   imageUrl: string
-  labelFr: string
-  labelEn: string
-  labelAr: string
+  labelFr: string | null
+  labelEn: string | null
+  labelAr: string | null
   tag: string
+  sortOrder: number
   ctaLabelFr: string | null
   ctaLabelEn: string | null
   ctaLabelAr: string | null
   ctaHref: string | null
+  isActive: boolean
+  createdAt: Date
 }
 
-/* ─── component ───────────────────────────────────────────────────── */
-export function PhotoSlider({ compact = false, dbSlides = null }: { compact?: boolean; dbSlides?: DbSlide[] | null }) {
-  const { t, lang } = useI18n()
+interface Props {
+  dbSlides?: DbSlide[]
+}
 
-  // Build slide list: prefer DB slides, fall back to hardcoded SLIDES
-  const slides: Slide[] = dbSlides
-    ? dbSlides.map((s) => ({
-        src: s.imageUrl,
-        labelKey: "__db__",
-        tag: s.tag as Slide["tag"],
-        cta: s.ctaHref
-          ? {
-              labelKey: "__db_cta__",
-              href: s.ctaHref,
-              labelFr: s.ctaLabelFr ?? undefined,
-              labelEn: s.ctaLabelEn ?? undefined,
-              labelAr: s.ctaLabelAr ?? undefined,
-            }
-          : undefined,
-        labelFr: s.labelFr,
-        labelEn: s.labelEn,
-        labelAr: s.labelAr,
-      }))
+export function PhotoSlider({ dbSlides }: Props) {
+  const { t, lang } = useI18n()
+  const [idx, setIdx] = useState(0)
+  const [dir, setDir] = useState(0)
+  const [touchStart, setTouchStart] = useState<number | null>(null)
+  const [isDragging, setIsDragging] = useState(false)
+  const autoRef = useRef<NodeJS.Timeout | null>(null)
+  const trackRef = useRef<HTMLDivElement>(null)
+
+  // Merge DB slides with static slides
+  const slides: Slide[] = dbSlides && dbSlides.length > 0
+    ? dbSlides
+        .filter((s) => s.isActive)
+        .sort((a, b) => a.sortOrder - b.sortOrder)
+        .map((s) => ({
+          src: s.imageUrl,
+          labelKey: `dbSlide.${s.id}`,
+          tag: s.tag as Slide["tag"],
+          labelFr: s.labelFr ?? undefined,
+          labelEn: s.labelEn ?? undefined,
+          labelAr: s.labelAr ?? undefined,
+          cta: s.ctaHref
+            ? {
+                labelKey: `dbSlideCta.${s.id}`,
+                href: s.ctaHref,
+                labelFr: s.ctaLabelFr ?? undefined,
+                labelEn: s.ctaLabelEn ?? undefined,
+                labelAr: s.ctaLabelAr ?? undefined,
+              }
+            : undefined,
+        }))
     : SLIDES
 
-  const [active, setActive] = useState(0)
-  const [prev, setPrev]     = useState<number | null>(null)
-  const [dir, setDir]       = useState<1 | -1>(1)
-  const [animating, setAnimating] = useState(false)
-  const timerRef  = useRef<ReturnType<typeof setInterval> | null>(null)
-  const touchXRef = useRef<number | null>(null)
-  const total = slides.length
+  const slideLabel = (slide: Slide) => {
+    if (slide.labelFr && lang === "fr") return slide.labelFr
+    if (slide.labelEn && lang === "en") return slide.labelEn
+    if (slide.labelAr && lang === "ar") return slide.labelAr
+    return t(slide.labelKey)
+  }
+
+  const ctaLabel = (slide: Slide) => {
+    if (!slide.cta) return ""
+    if (slide.cta.labelFr && lang === "fr") return slide.cta.labelFr
+    if (slide.cta.labelEn && lang === "en") return slide.cta.labelEn
+    if (slide.cta.labelAr && lang === "ar") return slide.cta.labelAr
+    return t(slide.cta.labelKey)
+  }
+
+  const n = slides.length
 
   const go = useCallback(
-    (d: 1 | -1) => {
-      if (animating) return
+    (d: number) => {
       setDir(d)
-      setPrev(active)
-      setActive((p) => mod(p + d, total))
-      setAnimating(true)
-      setTimeout(() => { setPrev(null); setAnimating(false) }, 600)
+      setIdx((i) => mod(i + d, n))
     },
-    [active, animating, total],
+    [n]
   )
 
-  const resetTimer = useCallback(() => {
-    if (timerRef.current) clearInterval(timerRef.current)
-    timerRef.current = setInterval(() => go(1), AUTO_INTERVAL)
+  // Auto-advance (skip promo slide)
+  useEffect(() => {
+    if (n <= 1) return
+    autoRef.current = setInterval(() => go(1), AUTO_INTERVAL)
+    return () => {
+      if (autoRef.current) clearInterval(autoRef.current)
+    }
+  }, [n, go])
+
+  // Keyboard
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "ArrowRight") go(1)
+      if (e.key === "ArrowLeft") go(-1)
+    }
+    window.addEventListener("keydown", onKey)
+    return () => window.removeEventListener("keydown", onKey)
   }, [go])
 
-  useEffect(() => {
-    resetTimer()
-    return () => { if (timerRef.current) clearInterval(timerRef.current) }
-  }, [resetTimer])
+  // Touch / swipe
+  const onTouchStart = (e: React.TouchEvent) => setTouchStart(e.touches[0].clientX)
+  const onTouchEnd = (e: React.TouchEvent) => {
+    if (touchStart == null) return
+    const diff = e.changedTouches[0].clientX - touchStart
+    if (Math.abs(diff) > 50) go(diff < 0 ? 1 : -1)
+    setTouchStart(null)
+  }
 
-  /* touch swipe */
-  const onTouchStart = (e: React.TouchEvent) => { touchXRef.current = e.touches[0].clientX }
-  const onTouchEnd   = (e: React.TouchEvent) => {
-    if (touchXRef.current === null) return
-    const delta = e.changedTouches[0].clientX - touchXRef.current
-    touchXRef.current = null
-    if (delta < -40) { go(1); resetTimer() }
-    else if (delta > 40) { go(-1); resetTimer() }
+  // Mouse drag
+  const onMouseDown = (e: React.MouseEvent) => {
+    setIsDragging(true)
+    setTouchStart(e.clientX)
+  }
+  const onMouseUp = (e: React.MouseEvent) => {
+    if (!isDragging || touchStart == null) return
+    const diff = e.clientX - touchStart
+    if (Math.abs(diff) > 50) go(diff < 0 ? 1 : -1)
+    setIsDragging(false)
+    setTouchStart(null)
   }
 
   const tagLabel: Record<string, string> = {
     service: t("slider.tagService"),
-    france:  "🇫🇷 France",
-    before:  t("slider.tagBefore"),
-    after:   t("slider.tagAfter"),
-    promo:   t("slider.promoTag"),
+    france: "France",
+    before: t("slider.tagBefore"),
+    after: t("slider.tagAfter"),
+    promo: t("slider.promoTag"),
   }
 
   return (
     <section
-      className="relative w-full overflow-hidden bg-black"
-      style={{ height: compact ? "clamp(360px, 48vw, 560px)" : "clamp(420px, 60vw, 720px)" }}
+      className="relative mx-auto w-full overflow-hidden rounded-3xl border border-border bg-muted"
+      style={{ maxWidth: 1100, aspectRatio: "16/9" }}
       onTouchStart={onTouchStart}
       onTouchEnd={onTouchEnd}
+      onMouseDown={onMouseDown}
+      onMouseUp={onMouseUp}
+      onMouseLeave={() => { setIsDragging(false); setTouchStart(null) }}
     >
-      {/* ── slides ─────────────────────────────────────────────────── */}
-      {slides.map((slide, i) => {
-        // Resolve locale label for DB slides
-        const slideLabel = slide.labelKey === "__db__"
-          ? (lang === "ar" ? slide.labelAr : lang === "en" ? slide.labelEn : slide.labelFr) ?? ""
-          : t(slide.labelKey)
-        const ctaLabel = slide.cta
-          ? slide.cta.labelKey === "__db_cta__"
-            ? (lang === "ar" ? slide.cta.labelAr : lang === "en" ? slide.cta.labelEn : slide.cta.labelFr) ?? ""
-            : t(slide.cta.labelKey)
-          : ""
-        const isActive = i === active
-        const isPrev   = i === prev
+      {/* Slides */}
+      <div
+        ref={trackRef}
+        className="flex h-full transition-transform duration-500 ease-out"
+        style={{ transform: `translateX(${-idx * 100}%)`, cursor: isDragging ? "grabbing" : "grab" }}
+      >
+        {slides.map((slide, i) => {
+          const isPromo = slide.tag === "promo"
+          const isBeforeAfter = slide.tag === "before" || slide.tag === "after"
+          const slideLabel = slideLabel(slide)
+          const ctaLabel = ctaLabel(slide)
 
-        // position classes based on direction + state
-        let translateClass = "translate-x-full"    // off-right by default
-        if (isActive) translateClass = "translate-x-0"
-        else if (isPrev) translateClass = dir === 1 ? "-translate-x-full" : "translate-x-full"
+          return (
+            <div key={i} className="relative h-full w-full shrink-0">
+              <Image
+                src={slide.src}
+                alt={slideLabel}
+                fill
+                className="object-cover"
+                sizes="(max-width: 1100px) 100vw, 1100px"
+                priority={i === 0}
+                draggable={false}
+              />
 
-        return (
-          <div
-            key={slide.src}
-            aria-hidden={!isActive}
-            className={`absolute inset-0 transition-transform duration-[600ms] ease-[cubic-bezier(0.25,0.46,0.45,0.94)] ${translateClass}`}
-          >
-            {/* image */}
-            <Image
-              src={slide.src}
-              alt={slideLabel}
-              fill
-              priority={i === 0}
-              className={`object-cover transition-transform duration-[8000ms] ease-linear ${
-                isActive ? "scale-110" : "scale-100"
-              }`}
-              sizes="100vw"
-              draggable={false}
-            />
+              {/* Promo overlay */}
+              {isPromo && <PromoOverlay t={t} />}
 
-            {/* overlay gradient */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-black/10" />
-
-            {/* promo slide gets its own overlay */}
-            {slide.tag === "promo" && isActive && <PromoOverlay t={t} />}
-
-            {/* regular slide content */}
-            {slide.tag !== "promo" && isActive && (
-              <div className="absolute bottom-0 left-0 right-0 p-6 pb-14 md:p-10 md:pb-16">
-                <span className={`mb-3 inline-block rounded-full px-3 py-1 text-xs font-bold ${TAG_STYLE[slide.tag]}`}>
-                  {tagLabel[slide.tag]}
-                </span>
-                <h2
-                  className="font-heading font-extrabold leading-tight text-white drop-shadow-xl"
-                  style={{ fontSize: "clamp(1.25rem,3.5vw,2.5rem)" }}
-                >
-                  {slideLabel}
-                </h2>
-                {/* Zyncleen logo inline */}
-                <p className="mt-1 text-xs font-semibold tracking-widest text-white/60">
-                  ZYN<span className="text-[oklch(0.7_0.13_232)]">CLEEN</span>
-                </p>
-                {slide.cta && (
-                  <Link
-                    href={slide.cta.href}
-                    className="mt-4 inline-flex items-center gap-2 rounded-full bg-[oklch(0.7_0.13_232)] px-6 py-2.5 text-sm font-bold text-white shadow-lg transition-all hover:scale-105 hover:bg-[oklch(0.62_0.15_232)] active:scale-95"
+              {/* Standard overlay */}
+              {!isPromo && (
+                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent px-6 pb-10 pt-24 md:px-10">
+                  <span
+                    className={`mb-2 inline-block rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider ${TAG_STYLE[slide.tag] ?? "bg-white/20 text-white"}`}
                   >
-                    {ctaLabel} <ArrowRight className="h-4 w-4" />
-                  </Link>
-                )}
-              </div>
-            )}
-          </div>
-        )
-      })}
+                    {tagLabel[slide.tag]}
+                  </span>
+                  <h2
+                    className="font-heading font-extrabold leading-tight text-white drop-shadow-xl"
+                    style={{ fontSize: "clamp(1.25rem,3.5vw,2.5rem)" }}
+                  >
+                    {slideLabel}
+                  </h2>
+                  {/* Anisclean logo inline */}
+                  <p className="mt-1 text-xs font-semibold tracking-widest text-white/60">
+                    ANIS<span className="text-[oklch(0.7_0.13_232)]">CLEAN</span>
+                  </p>
+                  {slide.cta && (
+                    <Link
+                      href={slide.cta.href}
+                      className="mt-4 inline-flex items-center gap-2 rounded-full bg-[oklch(0.7_0.13_232)] px-6 py-2.5 text-sm font-bold text-white shadow-lg transition-all hover:scale-105 hover:bg-[oklch(0.62_0.15_232)] active:scale-95"
+                    >
+                      {ctaLabel} <ArrowRight className="h-4 w-4" />
+                    </Link>
+                  )}
+                </div>
+              )}
+            </div>
+          )
+        })}
+      </div>
 
-      {/* ── Zyncleen watermark top-left ─────────────────────────────── */}
+      {/* ── Anisclean watermark top-left ─────────────────────────────── */}
       <div className="pointer-events-none absolute left-4 top-4 z-20 flex items-center gap-2">
         <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-black/40 backdrop-blur-sm">
-          <span className="text-sm font-black text-white">Z</span>
+          <span className="text-sm font-black text-white">A</span>
         </div>
         <span className="text-sm font-black tracking-wider text-white/90 drop-shadow">
-          ZYN<span className="text-[oklch(0.85_0.14_232)]">CLEEN</span>
+          ANIS<span className="text-[oklch(0.85_0.14_232)]">CLEAN</span>
         </span>
       </div>
 
-      {/* ── arrows ──────────────────────────────────────────────────── */}
-      <button
-        aria-label="Previous slide"
-        onClick={() => { go(-1); resetTimer() }}
-        className="absolute left-3 top-1/2 z-20 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-full bg-black/40 text-white backdrop-blur-sm transition hover:bg-black/70 md:left-5 md:h-12 md:w-12"
-      >
-        <ChevronLeft className="h-5 w-5" />
-      </button>
-      <button
-        aria-label="Next slide"
-        onClick={() => { go(1); resetTimer() }}
-        className="absolute right-3 top-1/2 z-20 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-full bg-black/40 text-white backdrop-blur-sm transition hover:bg-black/70 md:right-5 md:h-12 md:w-12"
-      >
-        <ChevronRight className="h-5 w-5" />
-      </button>
-
-      {/* ── dot indicators ──────────────────────────────────────────── */}
-      <div className="absolute bottom-6 left-1/2 z-20 flex -translate-x-1/2 items-center gap-2">
-        {slides.map((_, i) => (
+      {/* Arrows */}
+      {n > 1 && (
+        <>
           <button
-            key={i}
-            aria-label={`Go to slide ${i + 1}`}
-            onClick={() => { setActive(i); resetTimer() }}
-            className="h-1.5 rounded-full transition-all duration-300"
-            style={{
-              width:      i === active ? 28 : 6,
-              background: i === active ? "oklch(0.7 0.13 232)" : "rgba(255,255,255,0.45)",
-            }}
-          />
-        ))}
-      </div>
+            onClick={() => go(-1)}
+            className="absolute left-3 top-1/2 z-20 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-black/40 text-white backdrop-blur-sm transition hover:bg-black/60"
+            aria-label="Précédent"
+          >
+            <ChevronLeft className="h-5 w-5" />
+          </button>
+          <button
+            onClick={() => go(1)}
+            className="absolute right-3 top-1/2 z-20 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-black/40 text-white backdrop-blur-sm transition hover:bg-black/60"
+            aria-label="Suivant"
+          >
+            <ChevronRight className="h-5 w-5" />
+          </button>
+        </>
+      )}
 
-      {/* ── progress bar ─────────────────────────────────────────────── */}
-      <div className="absolute bottom-0 left-0 right-0 z-20 h-0.5 bg-white/10">
-        <div
-          key={active}
-          className="h-full bg-[oklch(0.7_0.13_232)]"
-          style={{
-            animation: `slideProgress ${AUTO_INTERVAL}ms linear forwards`,
-          }}
-        />
-      </div>
-
-      <style jsx>{`
-        @keyframes slideProgress {
-          from { width: 0% }
-          to   { width: 100% }
-        }
-      `}</style>
+      {/* Dots */}
+      {n > 1 && (
+        <div className="absolute bottom-3 left-1/2 z-20 flex -translate-x-1/2 gap-1.5">
+          {slides.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => {
+                setDir(i > idx ? 1 : -1)
+                setIdx(i)
+              }}
+              className={`h-2 rounded-full transition-all ${i === idx ? "w-6 bg-white" : "w-2 bg-white/50 hover:bg-white/70"}`}
+              aria-label={`Slide ${i + 1}`}
+            />
+          ))}
+        </div>
+      )}
     </section>
   )
 }
